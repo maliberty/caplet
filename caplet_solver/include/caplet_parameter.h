@@ -21,18 +21,17 @@ You should have received a copy of the Lesser GNU General Public License
 along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef CAPLET_PARAMETER_H
 #define CAPLET_PARAMETER_H
 
 //* Switches for using tabulated atan and log for each integral to speed up
 //- Default: commented
-//#define CAPLET_INIT_ATAN_LOG
-//#define CAPLET_ATAN_LOG_INT_XY
-//#define CAPLET_ATAN_LOG_INT_XYY
-//#define CAPLET_ATAN_LOG_INT_XYZ
-//#define CAPLET_ATAN_LOG_INT_XYXY
-//#define CAPLET_ATAN_LOG_INT_XYYZ
+// #define CAPLET_INIT_ATAN_LOG
+// #define CAPLET_ATAN_LOG_INT_XY
+// #define CAPLET_ATAN_LOG_INT_XYY
+// #define CAPLET_ATAN_LOG_INT_XYZ
+// #define CAPLET_ATAN_LOG_INT_XYXY
+// #define CAPLET_ATAN_LOG_INT_XYYZ
 
 //* Define to enable timer
 #define CAPLET_TIMER
@@ -49,14 +48,14 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 #define CAPLET_FLAT_ARCH
 #define CAPLET_FLAT_SIDE
 
-#define ROBUST_INTEGRAL_CHECK 
+#define ROBUST_INTEGRAL_CHECK
 
 //* Openmp num of threads
 #ifdef CAPLET_OPENMP
-    #define CAPLET_OPENMP_NUM_THREADS 4
+#define CAPLET_OPENMP_NUM_THREADS 4
 #endif
 
-namespace caplet{
+namespace caplet {
 
 //* Gauss quad points and subdivision number setting
 const int gauss_n = 2;
@@ -101,19 +100,18 @@ const bool switch_analytical_intZXXZ = switch_analytical_integral;
 const bool switch_analytical_intZXYZ = switch_analytical_integral;
 const bool switch_analytical_intZXXY = switch_analytical_integral;
 
-
 //* Define zero squared level used in analytical integrals
 //  Consider the nano scale of VLSI interconnects and layout minimum grids.
-//  Taking the length much lower than the grid size (nm) is a reasonable assumption
+//  Taking the length much lower than the grid size (nm) is a reasonable
+//  assumption
 //- Default: 1e-12
-const float zero  = 1e-12;
-const float zero2 = zero*zero;
-
+const float zero = 1e-12;
+const float zero2 = zero * zero;
 
 //* Approximation gaurd ring to increase guard ring for
 //  approximating calColD by 1/r
 const double approximationGuardRingForCalColD = 1.0;
 
-}
+}  // namespace caplet
 
-#endif // CAPLET_PARAMETER_H
+#endif  // CAPLET_PARAMETER_H

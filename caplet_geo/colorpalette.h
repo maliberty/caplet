@@ -34,16 +34,16 @@ class ColorPalette;
 
 class ColorPalette : public QDialog
 {
-    Q_OBJECT
-    
-public:
-    explicit ColorPalette(QColor** color, int nColor, QWidget *parent = 0);
-    ~ColorPalette();
-    
-private:
-    QLabel** label;
-    int      nLabel;
-    Ui::ColorPalette *ui;
+  Q_OBJECT
+
+ public:
+  explicit ColorPalette(QColor** color, int nColor, QWidget* parent = 0);
+  ~ColorPalette();
+
+ private:
+  QLabel** label;
+  int nLabel;
+  Ui::ColorPalette* ui;
 };
 
-#endif // COLORPALETTE_H
+#endif  // COLORPALETTE_H

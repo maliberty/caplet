@@ -22,111 +22,110 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef PANELRENDERER_H
 #define PANELRENDERER_H
 
-#include "geoloader.h"
-
 #include <QGLWidget>
 #include <vector>
 
-
+#include "geoloader.h"
 
 class QRadialGradient;
 class QColor;
 
-class RenderProperty{
-public:
-    int colorIndex;
+class RenderProperty
+{
+ public:
+  int colorIndex;
 };
 
 class PanelRenderer : public QGLWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    PanelRenderer( QWidget* parent = 0);
-    ~PanelRenderer();
-    void keyPressEvent(QKeyEvent * event);
-    void loadGLRects( const ConductorFPList *condFPListPtr);
-    void initView();
+ public:
+  PanelRenderer(QWidget* parent = 0);
+  ~PanelRenderer();
+  void keyPressEvent(QKeyEvent* event);
+  void loadGLRects(const ConductorFPList* condFPListPtr);
+  void initView();
 
+  enum COLORSCHEME
+  {
+    BYLAYER,
+    BYCONDUCTOR
+  };
 
-    enum COLORSCHEME { BYLAYER, BYCONDUCTOR };
+  void plotOutline(bool outlineFlag);
+  void clear();
 
-    void plotOutline(bool outlineFlag);
-    void clear();
+  //* color
+  QColor** color;
+  int nColor;
 
-    //* color
-    QColor** color;
-    int      nColor;
+ public slots:
+  void setGLColorScheme(int scheme);
 
-public slots:
-    void setGLColorScheme( int scheme );
+ protected:
+  void initializeGL();
+  void resizeGL(int width, int height);
+  void paintGL();
 
+  void mousePressEvent(QMouseEvent* event);
+  void mouseMoveEvent(QMouseEvent* event);
 
-protected:
-    void initializeGL();
-    void resizeGL(int width, int height);
-    void paintGL();
+ private:
+  void conductorFPList2RectGLForDisplay();
+  void setupGLRenderProperty();
+  void computeGLDisplayBoundary();
 
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+  std::vector<RenderProperty> renderPropertyVec;
 
+  const ConductorFPList* condFPListPtr;
 
-private:
-    void conductorFPList2RectGLForDisplay();
-    void setupGLRenderProperty();
-    void computeGLDisplayBoundary();
+  std::vector<RectangleGLList> rectGLForDisplay;
 
-    std::vector<RenderProperty>     renderPropertyVec;
+  int colorScheme;
 
-    const ConductorFPList           *condFPListPtr;
+  float (**panelArray)[12];
+  float (**normalArray)[3];
+  int nPanels;
+  bool isLoaded;
+  float axis[6];
+  float xc;
+  float yc;
+  float zc;
+  float xr;
+  float yr;
+  float zr;
+  float maxr;
 
-    std::vector<RectangleGLList>    rectGLForDisplay;
+  QPoint lastPos;
 
-    int     colorScheme;
+  GLfloat rotationX;
+  GLfloat rotationY;
+  GLfloat rotationZ;
+  GLfloat translationX;
+  GLfloat translationY;
+  GLfloat translationZ;
+  QRadialGradient gradient;
+  int mouseMode;
+  int mouseAxis;
+  float scale;
+  float outlineWidth;
 
+  bool outline;
 
-    float	(**panelArray)[12];
-    float	(**normalArray)[3];
-    int		nPanels;
-    bool	isLoaded;
-    float	axis[6];
-    float	xc;
-    float	yc;
-    float	zc;
-    float	xr;
-    float	yr;
-    float	zr;
-    float	maxr;
+  //* color setup
+  GLfloat currentColor[4];
+  int colorIndex;
+  inline GLfloat* getColor(int colorIndex)
+  {
+    currentColor[0] = color[colorIndex]->redF();
+    currentColor[1] = color[colorIndex]->greenF();
+    currentColor[2] = color[colorIndex]->blueF();
+    currentColor[3] = 1.0f;
+    return currentColor;
+  }
 
-    QPoint lastPos;
-
-    GLfloat rotationX;
-    GLfloat rotationY;
-    GLfloat rotationZ;
-    GLfloat translationX;
-    GLfloat translationY;
-    GLfloat translationZ;
-    QRadialGradient gradient;
-    int		mouseMode;
-    int		mouseAxis;
-    float	scale;
-    float	outlineWidth;
-
-    bool    outline;
-
-    //* color setup
-    GLfloat  currentColor[4];
-    int      colorIndex;
-    inline GLfloat* getColor(int colorIndex){
-        currentColor[0] = color[colorIndex]->redF();
-        currentColor[1] = color[colorIndex]->greenF();
-        currentColor[2] = color[colorIndex]->blueF();
-        currentColor[3] = 1.0f;
-        return currentColor;
-    }
-
-    static const int nDir = 6;
+  static const int nDir = 6;
 };
 
-
-#endif // PANELRENDERER_H
+#endif  // PANELRENDERER_H

@@ -22,20 +22,17 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "geoloader.h"
-#include "panelrenderer.h"
-#include "colorpalette.h"
-
-#include <QMainWindow>
-#include <QString>
 #include <QActionGroup>
 #include <QDoubleValidator>
+#include <QMainWindow>
+#include <QString>
 
-
+#include "colorpalette.h"
+#include "geoloader.h"
+#include "panelrenderer.h"
 
 class PanelRenderer;
 class GeoLoader;
-
 
 namespace Ui {
 class MainWindow;
@@ -43,102 +40,102 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
-    
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-    void loadFile(float unit = 1e-9); // default: 1nm grid for GDS
-    void clear();
+  Q_OBJECT
 
-    void displayGeometry();
-    void displayPWCBasisFunction();
-    void displayInstantiableBasisFunction();
+ public:
+  explicit MainWindow(QWidget* parent = 0);
+  ~MainWindow();
+  void loadFile(float unit = 1e-9);  // default: 1nm grid for GDS
+  void clear();
 
-public slots:
-    void byLayerClicked();
-    void byConductorClicked();
+  void displayGeometry();
+  void displayPWCBasisFunction();
+  void displayInstantiableBasisFunction();
 
-protected:
-    void keyPressEvent(QKeyEvent *event);
+ public slots:
+  void byLayerClicked();
+  void byConductorClicked();
 
-private slots:
-    //* file
-    void on_actionOpenFile_triggered();
-    void on_actionExit_triggered();
+ protected:
+  void keyPressEvent(QKeyEvent* event);
 
-    //**
-    //* The buttons and menu actions are bundled together
-    //*   through _triggered() and _clicked().
-    //* The functions on_action*_triggered() do self-checking
-    //*   and perform the actions, whereas the functions on_*_clicked()
-    //*   are the shortcut to connect clicked() signals to slots
-    //*   and call on_action*_triggered() for the actual actions.
-    //* Better implementation can be possibly done but
-    //*   for now this way serves the purpose though tedious.
+ private slots:
+  //* file
+  void on_actionOpenFile_triggered();
+  void on_actionExit_triggered();
 
-    //* color scheme
-    void on_actionColorSchemeLayer_triggered();
-    void on_actionColorSchemeConductor_triggered();
-    void on_colorSchemeLayerRadio_clicked();
-    void on_colorSchemeConductorRadio_clicked();
-    void on_actionOutline_triggered(bool checked);
-    void on_outlineBox_clicked(bool checked);
+  //**
+  //* The buttons and menu actions are bundled together
+  //*   through _triggered() and _clicked().
+  //* The functions on_action*_triggered() do self-checking
+  //*   and perform the actions, whereas the functions on_*_clicked()
+  //*   are the shortcut to connect clicked() signals to slots
+  //*   and call on_action*_triggered() for the actual actions.
+  //* Better implementation can be possibly done but
+  //*   for now this way serves the purpose though tedious.
 
-    //* solver type
-    void on_actionNone_triggered();
-    void on_actionCAPLET_triggered();
-    void on_actionFASTCAP_triggered();
-    void on_actionStandardBEM_triggered();
-    void on_solverNoneRadio_clicked();
-    void on_solverCapletRadio_clicked();
-    void on_solverFastcapRadio_clicked();
-    void on_solverStandardRadio_clicked();
+  //* color scheme
+  void on_actionColorSchemeLayer_triggered();
+  void on_actionColorSchemeConductor_triggered();
+  void on_colorSchemeLayerRadio_clicked();
+  void on_colorSchemeConductorRadio_clicked();
+  void on_actionOutline_triggered(bool checked);
+  void on_outlineBox_clicked(bool checked);
 
-    //* parameter setting event
-    void on_pwcSizeLineEdit_returnPressed();
-    void on_extractionButton_clicked();
-    void on_computeReferenceButton_clicked();
-    void on_loadReferenceButton_clicked();
-    void on_flatCheckBox_clicked(bool checked);
-    void on_archCheckBox_clicked(bool checked);
-    void on_archLengthLineEdit_returnPressed();
-    void on_projDistLineEdit_returnPressed();
-    void on_mergeDistLineEdit_returnPressed();
+  //* solver type
+  void on_actionNone_triggered();
+  void on_actionCAPLET_triggered();
+  void on_actionFASTCAP_triggered();
+  void on_actionStandardBEM_triggered();
+  void on_solverNoneRadio_clicked();
+  void on_solverCapletRadio_clicked();
+  void on_solverFastcapRadio_clicked();
+  void on_solverStandardRadio_clicked();
 
-    //* misc event
-    void on_actionPalette_triggered();
-    void on_actionAbout_triggered();
+  //* parameter setting event
+  void on_pwcSizeLineEdit_returnPressed();
+  void on_extractionButton_clicked();
+  void on_computeReferenceButton_clicked();
+  void on_loadReferenceButton_clicked();
+  void on_flatCheckBox_clicked(bool checked);
+  void on_archCheckBox_clicked(bool checked);
+  void on_archLengthLineEdit_returnPressed();
+  void on_projDistLineEdit_returnPressed();
+  void on_mergeDistLineEdit_returnPressed();
 
-private:
-    bool                isLoaded;
-    float               unit;
-    PanelRenderer*      panelRenderer;
-    GeoLoader*          geoLoader;
-    ColorPalette*       colorpalette;
+  //* misc event
+  void on_actionPalette_triggered();
+  void on_actionAbout_triggered();
 
-    QString             fileName;
-    QString             fileBaseName;
-    QString             fileSuffix;
-    QString             canonicalPath;
+ private:
+  bool isLoaded;
+  float unit;
+  PanelRenderer* panelRenderer;
+  GeoLoader* geoLoader;
+  ColorPalette* colorpalette;
 
-    QActionGroup*       colorSchemeGroup;
-    QActionGroup*       solverGroup;
-    QDoubleValidator*   pwcSizeValidator;
-    QDoubleValidator*   archLengthValidator;
-    QDoubleValidator*   projDistValidator;
-    QDoubleValidator*   mergeDistValidator;
-    QIntValidator*      coreNumValidator;
+  QString fileName;
+  QString fileBaseName;
+  QString fileSuffix;
+  QString canonicalPath;
 
-    QDoubleValidator*   initPWCSizeValidator;
-    QDoubleValidator*   alphaValidator;
-    QDoubleValidator*   epsilonValidator;
+  QActionGroup* colorSchemeGroup;
+  QActionGroup* solverGroup;
+  QDoubleValidator* pwcSizeValidator;
+  QDoubleValidator* archLengthValidator;
+  QDoubleValidator* projDistValidator;
+  QDoubleValidator* mergeDistValidator;
+  QIntValidator* coreNumValidator;
 
-    void logTime(const QString &msg, bool flagBlue=true);
-    void log(const QString &msg);
+  QDoubleValidator* initPWCSizeValidator;
+  QDoubleValidator* alphaValidator;
+  QDoubleValidator* epsilonValidator;
 
-private:
-    Ui::MainWindow *ui;
+  void logTime(const QString& msg, bool flagBlue = true);
+  void log(const QString& msg);
+
+ private:
+  Ui::MainWindow* ui;
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

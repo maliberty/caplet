@@ -20,47 +20,45 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "colorpalette.h"
-#include "ui_colorpalette.h"
 
 #include <QColor>
+#include <QDebug>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <QDebug>
-
 #include <iostream>
 
-ColorPalette::ColorPalette(QColor** color, int nColor, QWidget *parent) :
-    QDialog(parent), nLabel(nColor),
-    ui(new Ui::ColorPalette)
-{
-    ui->setupUi(this);
-    int r;
-    int g;
-    int b;
+#include "ui_colorpalette.h"
 
-    label = new QLabel*[nLabel];
-    for (int i=0; i<nLabel; ++i){
-        label[i] = new QLabel(QString::number(i+1));
-        label[i]->setVisible(true);
-        ui->formLayout->addRow(label[i]);
-        r = color[i]->red();
-        g = color[i]->green();
-        b = color[i]->blue();
-        QString style = "QLabel { background-color : rgb("
-                + QString::number(r) + ", "
-                + QString::number(g) + ", "
-                + QString::number(b) + ")}";
-        label[i]->setStyleSheet(style);
-        label[i]->setAlignment(Qt::AlignHCenter);
-    }
+ColorPalette::ColorPalette(QColor** color, int nColor, QWidget* parent)
+    : QDialog(parent), nLabel(nColor), ui(new Ui::ColorPalette)
+{
+  ui->setupUi(this);
+  int r;
+  int g;
+  int b;
+
+  label = new QLabel*[nLabel];
+  for (int i = 0; i < nLabel; ++i) {
+    label[i] = new QLabel(QString::number(i + 1));
+    label[i]->setVisible(true);
+    ui->formLayout->addRow(label[i]);
+    r = color[i]->red();
+    g = color[i]->green();
+    b = color[i]->blue();
+    QString style = "QLabel { background-color : rgb(" + QString::number(r)
+                    + ", " + QString::number(g) + ", " + QString::number(b)
+                    + ")}";
+    label[i]->setStyleSheet(style);
+    label[i]->setAlignment(Qt::AlignHCenter);
+  }
 }
 
 ColorPalette::~ColorPalette()
 {
-    for (int i=0; i<nLabel; ++i){
-        delete label[i];
-    }
-    delete label;
+  for (int i = 0; i < nLabel; ++i) {
+    delete label[i];
+  }
+  delete label;
 
-    delete ui;
+  delete ui;
 }

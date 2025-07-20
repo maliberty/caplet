@@ -19,7 +19,6 @@ You should have received a copy of the Lesser GNU General Public License
 along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef DEBUG_H
 #define DEBUG_H
 
@@ -27,18 +26,16 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 
 //_________________________________________________________
 //* geoloader
-//#define DEBUG_PANEL_DISCRETIZATION
-//#define DEBUG_CUT
-//#define DEBUG_POLY2RECT
-
-
+// #define DEBUG_PANEL_DISCRETIZATION
+// #define DEBUG_CUT
+// #define DEBUG_POLY2RECT
 
 //_________________________________________________________
 //* gdsgeometry
-//#define CONDUCTOR_PRINT_ALL_RECTS
+// #define CONDUCTOR_PRINT_ALL_RECTS
 //- COMBINED_SHAPE
 //  comment for more number of basis functions but better accuracy
-//#define COMBINED_SHAPE
+// #define COMBINED_SHAPE
 
 //_________________________________________________________
 //* panelrenderer
@@ -50,12 +47,12 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 //* Uncomment to use obsolete mergeProjection() algorithm
 //* - Everything on the same support is merged when possible
 //* - No projection distance info is used
-//#define MERGE_PROJECTION_VER1_0
+// #define MERGE_PROJECTION_VER1_0
 
-namespace caplet{
-    const float DEFAULT_PROJECTION_MERGE_DISTANCE = 1e-7f;
-    const float DEFAULT_PROJECTION_DISTANCE = 2e-6f;
-    const float DEFAULT_COINCIDENTAL_MARGIN = 0.05;
-};
+namespace caplet {
+const float DEFAULT_PROJECTION_MERGE_DISTANCE = 1e-7f;
+const float DEFAULT_PROJECTION_DISTANCE = 2e-6f;
+const float DEFAULT_COINCIDENTAL_MARGIN = 0.05;
+};  // namespace caplet
 
-#endif // DEBUG_H
+#endif  // DEBUG_H

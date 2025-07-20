@@ -22,7 +22,6 @@ You should have received a copy of the Lesser GNU General Public License
 along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef CAPLET_DEBUG_H
 #define CAPLET_DEBUG_H
 
@@ -30,10 +29,10 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 // #define NDEBUG
 
 //* Check if boundaries of extracted shapes exceeded
-//#define DEBUG_SHAPE_BOUNDARY_CHECK
+// #define DEBUG_SHAPE_BOUNDARY_CHECK
 
 //* Check panel aspect ratio for FASTCAP or CAPLET output
-//#define DEBUG_ASPECT_RATIO_VALIDITY
+// #define DEBUG_ASPECT_RATIO_VALIDITY
 
 //* Print P matrix to file "pmatrix"
 // #define DEBUG_PRINT_P
@@ -41,4 +40,4 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 //* Print nan and inf entries
 // #define DEBUG_DETECT_NAN_INF_ENTRY
 
-#endif // CAPLET_DEBUG_H
+#endif  // CAPLET_DEBUG_H

@@ -21,11 +21,10 @@ You should have received a copy of the Lesser GNU General Public License
 along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef CAPLET_ELEM_H_
 #define CAPLET_ELEM_H_
 
-namespace caplet{
+namespace caplet {
 
 /* table-lookup atan */
 float atan(float val);
@@ -33,7 +32,6 @@ float atan(float val);
 /* table-lookup log */
 float log(const float val);
 
-
-}
+}  // namespace caplet
 
 #endif /* CAPLET_ELEM_H_ */

@@ -20,20 +20,20 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QApplication>
-#include "mainwindow.h"
+#include <cstdlib>
+#include <string>
 
 #include "geoloader.h"
-#include <string>
-#include <cstdlib>
+#include "mainwindow.h"
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv);
+  QApplication a(argc, argv);
 
-    MainWindow w;
-    w.show();
-    
-    return a.exec();
+  MainWindow w;
+  w.show();
+
+  return a.exec();
 }

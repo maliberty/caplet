@@ -22,26 +22,32 @@ You should have received a copy of the Lesser GNU General Public License
 along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef CAPLET_CONST_H
 #define CAPLET_CONST_H
 
-namespace caplet{
+namespace caplet {
 
-enum DIR{
-    X, Y, Z, FLAT
+enum DIR
+{
+  X,
+  Y,
+  Z,
+  FLAT
 };
-enum {
-    MIN, MAX, LENGTH, CENTER
+enum
+{
+  MIN,
+  MAX,
+  LENGTH,
+  CENTER
 };
 
 const int nDim = 3;
 const int nBit = 4;
 const float MAX_ASPECT_RATIO = 50;
 
-
 typedef float (*shape_t)(float, float);
 
-}
+}  // namespace caplet
 
-#endif // CAPLET_CONST_H
+#endif  // CAPLET_CONST_H
