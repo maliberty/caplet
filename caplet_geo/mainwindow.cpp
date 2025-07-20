@@ -213,6 +213,7 @@ void MainWindow::keyPressEvent(QKeyEvent* e)
     case Qt::Key_D:
     case Qt::Key_R:
       panelRenderer->keyPressEvent(e);
+      break;
     default:
       QWidget::keyPressEvent(e);
   }
