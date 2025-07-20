@@ -42,11 +42,11 @@ enum
   CENTER
 };
 
-const int nDim = 3;
-const int nBit = 4;
-const float MAX_ASPECT_RATIO = 50;
+constexpr int nDim = 3;
+constexpr int nBit = 4;
+constexpr float kMaxAspectRatio = 50;
 
-typedef float (*shape_t)(float, float);
+using shape_t = float (*)(float, float);
 
 }  // namespace caplet
 

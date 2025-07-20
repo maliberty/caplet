@@ -1969,7 +1969,7 @@ void Caplet::modifyPanelAspectRatio()
 
     std::exit(1);
   }
-  const float maxRatio = MAX_ASPECT_RATIO;
+  const float maxRatio = kMaxAspectRatio;
 
   std::list<float> panelsTemp[3][2];
   std::list<int> dirsTemp;
