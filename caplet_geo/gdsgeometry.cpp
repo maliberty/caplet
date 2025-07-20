@@ -147,8 +147,7 @@ Rectangle::Rectangle(const Rectangle& rect)
 
 //**
 //* Constructor
-Rectangle::Rectangle(const Polygon& poly) throw(ShapeTransformationError)
-    : normal(ZP), z1(0), z2(0)
+Rectangle::Rectangle(const Polygon& poly) : normal(ZP), z1(0), z2(0)
 {
   if (poly.size() > 5) {
     stringstream ss;
@@ -526,8 +525,7 @@ Conductor::Conductor(int nMetal1, int nVia1)
 
 //**
 //* operator +=
-Conductor& Conductor::operator+=(const Conductor& rhs) throw(
-    ConductorLayerNotCompatibleError)
+Conductor& Conductor::operator+=(const Conductor& rhs)
 {  ///
   if (nMetal != rhs.nMetal || nVia != rhs.nVia) {
     throw ConductorLayerNotCompatibleError(nMetal, nVia, rhs.nMetal, rhs.nVia);
@@ -639,7 +637,7 @@ void Conductor::generateVia(Rectangle rect,
         //* rect overlaps with *eachRectIt
         //* Decompose *eachRectIt
         //* Note that *eachRectIt is erased which implies eachRectIt is advanced
-        //by 1
+        // by 1
         tempRect = innerDecompose(
             layer[metalIndex][metalRectDir], eachRectIt, tempRect);
         if (tempRect.area() == 0) {
@@ -1382,9 +1380,9 @@ RectangleGLList::RectangleGLList(const RectangleGLList& rectList)
 //*   (being as part of a condcutorFPList)
 //* - If each contains what is after, then erase the latter one.
 //* - If only overlapping with the same boundaries, then merge (update *each and
-//erase *after)
+// erase *after)
 //* - Inner loop returns to the first one if any modification happens to the
-//list
+// list
 //* - does not support sublayer
 void RectangleGLList::mergeProjection()
 {
@@ -1473,7 +1471,7 @@ void RectangleGLList::mergeProjection()
 //* - Assume the grid size is 1e-9 (zero)
 //* - If each contains what is after, then erase the latter one.
 //* - If only overlapping with the same boundaries, then merge (update *each and
-//erase *after)
+// erase *after)
 //* - does not support sublayer
 void RectangleGLList::mergeProjection1_1(const float projectionMergeDistance)
 {

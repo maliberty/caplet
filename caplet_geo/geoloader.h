@@ -43,7 +43,7 @@ along with CAPLET.  If not, see <http://www.gnu.org/licenses/>.
 //* 1. Contact layer ca needs special care: it connects both poly and drain.
 //*    Currently we consider the connection to poly only. (Ignore for now)
 //* 2. Need special treatments for drain/contact and poly/contact. (Ignore for
-//now)
+// now)
 //*
 
 typedef std::vector<std::vector<float>> Matrix;
@@ -67,9 +67,8 @@ class ExtractionInfo
   void printMatrix(std::ostream& out = std::cout) const;
   void print(std::ostream& out = std::cout) const;
   std::string toString() const;
-  float compare(const ExtractionInfo& ref) const throw(std::length_error);
-  std::vector<float> compareDiagonal(const ExtractionInfo& ref) const
-      throw(std::length_error);
+  float compare(const ExtractionInfo& ref) const;
+  std::vector<float> compareDiagonal(const ExtractionInfo& ref) const;
 };
 
 typedef std::list<ExtractionInfo> ExtractionInfoList;
@@ -104,8 +103,7 @@ class GeoLoader
     STANDARD
   };
 
-  void loadGeo(const std::string& fileName) throw(FileNotFoundError,
-                                                  GeometryNotManhattanError);
+  void loadGeo(const std::string& fileName);
 
   //**
   //* generate basis functions and floating point geometry
@@ -121,16 +119,13 @@ class GeoLoader
       const float projectionMergeDistance
       = caplet::DEFAULT_PROJECTION_MERGE_DISTANCE);
 
-  void loadQui(const std::string& inputFileName) throw(FileNotFoundError);
+  void loadQui(const std::string& inputFileName);
 
   ExtractionInfo& runFastcap(const std::string& pathFileBaseName,
-                             const std::string& option
-                             = "") throw(FileNotFoundError);
+                             const std::string& option = "");
   ExtractionInfo& runCaplet(const std::string& pathFileBaseName,
-                            const unsigned coreNum
-                            = 1) throw(FileNotFoundError);
-  ExtractionInfo& runCapletQui(const std::string& pathFileBaseName) throw(
-      FileNotFoundError);
+                            const unsigned coreNum = 1);
+  ExtractionInfo& runCapletQui(const std::string& pathFileBaseName);
 
   std::string fileName;
 
@@ -176,10 +171,9 @@ class GeoLoader
   double tPWCConstruction;
   double tInstantiableConstruction;
 
-  void readGeo(
-      const std::string& geoFileName,
-      LayeredPolygonList& metalLayeredPolygonList,
-      LayeredPolygonList& viaLayeredPolygonList) throw(FileNotFoundError);
+  void readGeo(const std::string& geoFileName,
+               LayeredPolygonList& metalLayeredPolygonList,
+               LayeredPolygonList& viaLayeredPolygonList);
   void readLayerInfo(std::ifstream& fin);
   void readStruc(std::ifstream& fin,
                  int nLayer,
@@ -223,9 +217,9 @@ void instantiateBasisFunction(ConductorFPList& cond,
 //*
 //*
 void writeFastcapFile(const std::string& outputFileName,
-                      const ConductorFPList& cond) throw(FileNotFoundError);
+                      const ConductorFPList& cond);
 void writeCapletFile(const std::string& outputFileName,
-                     const ConductorFPList& cond) throw(FileNotFoundError);
+                     const ConductorFPList& cond);
 
 //****
 //*

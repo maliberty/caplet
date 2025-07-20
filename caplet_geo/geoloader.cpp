@@ -75,8 +75,7 @@ GeoLoader::~GeoLoader()
 //**
 //* loadGeo
 //* - Test if geoFile exists first before clear things up
-void GeoLoader::loadGeo(const string& geoFile) throw(FileNotFoundError,
-                                                     GeometryNotManhattanError)
+void GeoLoader::loadGeo(const string& geoFile)
 {
   //* read geomery definitions from geoFile
   LayeredPolygonList metalLayeredPolygonList;
@@ -214,7 +213,7 @@ const ConductorFPList& GeoLoader::getInstantiableBasisFunction(
   return instantiableConductorFPList;
 }
 
-void GeoLoader::loadQui(const string& inputFileName) throw(FileNotFoundError)
+void GeoLoader::loadQui(const string& inputFileName)
 {
   map<int, RectangleGLList> rectListMap;
 
@@ -278,8 +277,7 @@ void GeoLoader::loadQui(const string& inputFileName) throw(FileNotFoundError)
 //* - write pwcConductorFPList to .qui in path
 //* - run caplet
 //* - write output to .stdsolver_output
-ExtractionInfo& GeoLoader::runCapletQui(
-    const std::string& pathFileBaseName) throw(FileNotFoundError)
+ExtractionInfo& GeoLoader::runCapletQui(const std::string& pathFileBaseName)
 {
   int coreNum = 1;
 
@@ -391,9 +389,8 @@ ExtractionInfo& GeoLoader::runCapletQui(
 //* - write pwcConductorFPList to .qui in path
 //* - run fastcap with flag
 //* - write output to .fastcap_output
-ExtractionInfo& GeoLoader::runFastcap(
-    const string& pathFileBaseName,
-    const string& option) throw(FileNotFoundError)
+ExtractionInfo& GeoLoader::runFastcap(const string& pathFileBaseName,
+                                      const string& option)
 {
   const string program = "./fastcap";
   const string suffix = "fastcap_output";
@@ -502,9 +499,8 @@ ExtractionInfo& GeoLoader::runFastcap(
   return result;
 }
 
-ExtractionInfo& GeoLoader::runCaplet(
-    const string& pathFileBaseName,
-    const unsigned coreNum) throw(FileNotFoundError)
+ExtractionInfo& GeoLoader::runCaplet(const string& pathFileBaseName,
+                                     const unsigned coreNum)
 {
   const string program = "../caplet_solver/bin/capletMPI";
   const string suffix = "caplet_output";
@@ -692,7 +688,7 @@ ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
 {
   //* Init:
   //* For each ci on Layer k, check all vias on Layer k+, and add overlapping
-  //vias vj to ci
+  // vias vj to ci
   //*     For each vj, add LayeredCond cl connected to vj on Layer k+1 to ci
 
   conductorList.clear();
@@ -719,12 +715,12 @@ ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
       list<Conductor>::iterator eachTopCondIt;
 
       //* flags that indicate whether the metals connected to via bottom and via
-      //top found, respectively.
+      // top found, respectively.
       bool flagBottom = false;
       bool flagTop = false;
 
       //* Search for metal conductors that connect to the bottom and the top of
-      //the via
+      // the via
       for (list<Conductor>::iterator eachCondIt = conductorList.begin();
            eachCondIt != conductorList.end();
            ++eachCondIt) {
@@ -739,7 +735,7 @@ ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
           eachTopCondIt = eachCondIt;
         }
         //* Both metal connected to via bottom and to via top are found. Break
-        //loop.
+        // loop.
         if (flagBottom == true && flagTop == true) {
           break;
         }
@@ -802,10 +798,9 @@ ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
 //**
 //* GeoLoader::readGeo
 //* - aux function of loadGeo()
-void GeoLoader::readGeo(
-    const std::string& geoFileName,
-    LayeredPolygonList& metalLayeredPolygonList,
-    LayeredPolygonList& viaLayeredPolygonList) throw(FileNotFoundError)
+void GeoLoader::readGeo(const std::string& geoFileName,
+                        LayeredPolygonList& metalLayeredPolygonList,
+                        LayeredPolygonList& viaLayeredPolygonList)
 {
   ifstream fin(geoFileName.c_str());
   if (!fin.is_open()) {
@@ -1195,7 +1190,7 @@ PolygonList extend(Polygon& poly,
       //* the inserted point coincides the far end of the closest edge
       //* the next edge of the closest edge will be collinear with extensionEdge
       //* need to further extend extensionEdge and cut the U-shaped exterior
-      //polygon
+      // polygon
       if (theOtherPointIt == prevIterator(poly, extensionPointIt)) {
         insertedPointIt = nextClosestPointIt;
       } else {
@@ -1355,10 +1350,10 @@ void poly2rect(PolygonList& polyList, RectangleList& rectList)
   Polygon poly;
 
   //* STEP 1: Compute lens and dirs (inward normal) for each edge for each
-  //polygon
+  // polygon
   //* - Each edge is represented by a point.
   //* - The other point of an edge is the next point iterator inferred by list
-  //data structure.
+  // data structure.
   for (PolygonList::iterator eachPolygon = polyList.begin();
        eachPolygon != polyList.end();
        ++eachPolygon) {
@@ -1387,10 +1382,10 @@ void poly2rect(PolygonList& polyList, RectangleList& rectList)
   }
 
   //* STEP 2: Decompose each polygon into a list of disjoint rectangles for a
-  //single metal layer
+  // single metal layer
   //* - Pop the first polygon from polyList
   //* - Find the longest edge, sweep the edge to cover a rect area, and cut the
-  //rect from the polygon.
+  // rect from the polygon.
   //* - Push back the list of polygons that remain after the cut.
   //* - Keep popping the first polygon from polyList until polyList is empty.
   while (!polyList.empty()) {
@@ -1404,7 +1399,7 @@ void poly2rect(PolygonList& polyList, RectangleList& rectList)
     }
 
     //* Find the longest edge and determine whether the vertex is convex or
-    //non-convex
+    // non-convex
     //* then cut both vertices of the longest edge if applicable
     Polygon::iterator longestEdgeIt
         = max_element(poly.begin(), poly.end(), lenLess);
@@ -1518,7 +1513,7 @@ void generateConnectedRects(RectangleList& rectList,
     rectList.pop_front();
 
     //* loop over rectList to find any rect that is connected to the back pushed
-    //item
+    // item
     for (RectangleList::iterator eachRectIt = rectListList.back().begin();
          eachRectIt != rectListList.back().end();
          ++eachRectIt) {
@@ -2165,7 +2160,7 @@ void intersectArch(RectangleGLList& rectList,
 //*
 //*
 void writeFastcapFile(const std::string& outputFileName,
-                      const ConductorFPList& cond) throw(FileNotFoundError)
+                      const ConductorFPList& cond)
 {
   string fullFileName = outputFileName + ".qui";
   ofstream fout(fullFileName.c_str());
@@ -2302,7 +2297,7 @@ void writeFastcapFile(const std::string& outputFileName,
 }
 
 void writeCapletFile(const std::string& outputFileName,
-                     const ConductorFPList& cond) throw(FileNotFoundError)
+                     const ConductorFPList& cond)
 {
   string fullFileName = outputFileName + ".caplet";
   ofstream fout(fullFileName.c_str());
@@ -2563,7 +2558,6 @@ string ExtractionInfo::toString() const
 }
 
 float ExtractionInfo::compare(const ExtractionInfo& ref) const
-    throw(length_error)
 {
   if (ref.capacitanceMatrix.size() == 0) {
     return numeric_limits<float>::quiet_NaN();
@@ -2590,7 +2584,6 @@ float ExtractionInfo::compare(const ExtractionInfo& ref) const
 }
 
 vector<float> ExtractionInfo::compareDiagonal(const ExtractionInfo& ref) const
-    throw(length_error)
 {
   if (ref.capacitanceMatrix.size() == 0) {
     return vector<float>(1, numeric_limits<float>::quiet_NaN());

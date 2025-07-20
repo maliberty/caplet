@@ -197,7 +197,7 @@ class Rectangle
   //**
   //* Constructor
   //* - Transform a 2D (+z-dir) 4-point polygon to a rectangle
-  Rectangle(const Polygon& poly) throw(ShapeTransformationError);
+  Rectangle(const Polygon& poly);
 
   //**
   //* Copy constructor
@@ -320,24 +320,23 @@ class Conductor
   //**
   //* operator +=
   //* - appended by rhs
-  Conductor& operator+=(const Conductor& rhs) throw(
-      ConductorLayerNotCompatibleError);
+  Conductor& operator+=(const Conductor& rhs);
 
   //**
   //* isContaining
   //* - Check if the 2D +z rect is contained in this conductor regardless of the
-  //z-coordinate
+  // z-coordinate
   bool isContaining(const Rectangle rect2d, const int layerIndex);
 
   //* generateVia
   //* - ASSUMPTION: no metal rect has a corner inside the via
   //* - Use SHRINK_VIA macro variable to toggle whether to modify via size or
-  //not
+  // not
   //*   (for the test example generation purpose)
   //* - If isDecomposed is true, then non-overlapping panel decomposition is
-  //performed.
+  // performed.
   //* - If isDecomposed is false, then overlapping rect is generated for via
-  //tops and bottoms.
+  // tops and bottoms.
   void generateVia(Rectangle rect,  // modified only when SHRINK_VIA is defined
                    const int viaIndex,
                    const int* const* viaDef,
@@ -431,7 +430,7 @@ class RectangleGL
   //* - assume same elevation in the normal direction (no check)
   //* - intersect this arch with flat rect
   //* - only consider the case when the edge of decaying head is contained in
-  //the flat rect
+  // the flat rect
   RectangleGL intersectArchOnFlat(const RectangleGL& flat) const;
 
   //**
