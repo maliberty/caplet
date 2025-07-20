@@ -46,7 +46,7 @@ constexpr int nDim = 3;
 constexpr int nBit = 4;
 constexpr float kMaxAspectRatio = 50;
 
-using shape_t = float (*)(float, float);
+using Shape = float (*)(float, float);
 
 }  // namespace caplet
 

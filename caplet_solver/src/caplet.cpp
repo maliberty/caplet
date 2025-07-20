@@ -1323,8 +1323,8 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
   }
 
   //* Select shapes
-  shape_t shape1 = selectShape(panel1);
-  shape_t shape2 = selectShape(panel2);
+  Shape shape1 = selectShape(panel1);
+  Shape shape2 = selectShape(panel2);
 
   //* Rotate, mirror, and call proper integrals
   switch (dirs[panel1]) {
@@ -2131,7 +2131,7 @@ void Caplet::modifyPanelAspectRatio()
   }
 }
 
-shape_t Caplet::selectShape(int panel)
+Shape Caplet::selectShape(int panel)
 {
   switch (this->basisTypes[panel]) {
     case 'A':

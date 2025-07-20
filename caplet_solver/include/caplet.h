@@ -152,7 +152,7 @@ class Caplet
   void modifyPanelAspectRatio();
   bool isPanelAspectRatioValid();
 
-  shape_t selectShape(int panel);
+  Shape selectShape(int panel);
 
  private:  //* coordinate functions
   inline void rotateX2Z(float* coord_ptr[3][4], int panelNo)
