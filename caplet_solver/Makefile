@@ -26,6 +26,17 @@ CAPLET_OPENMP_OBJ = \
 	$(OBJ_OPENMP)/caplet_widgets.o \
 	$(OBJ_OPENMP)/main.o \
 
+CAPLET_INCLUDE = \
+	$(INCLUDE)/caplet.h \
+	$(INCLUDE)/caplet_blas.h \
+	$(INCLUDE)/caplet_const.h \
+	$(INCLUDE)/caplet_debug.h \
+	$(INCLUDE)/caplet_elem.h \
+	$(INCLUDE)/caplet_gauss.h \
+	$(INCLUDE)/caplet_int.h \
+	$(INCLUDE)/caplet_parameter.h \
+	$(INCLUDE)/caplet_widgets.h
+
 all: capletMPI capletOpenMP 
 
 mpi: capletMPI 
@@ -35,13 +46,13 @@ openmp: capletOpenMP
 capletMPI: $(CAPLET_MPI_OBJ)
 	$(MPICXX) $(FLAG) $(DEF_MPI) -o $(BIN)/$@ $^ $(LIB)
 
-$(OBJ_MPI)/%.o: $(SRC)/%.cpp
+$(OBJ_MPI)/%.o: $(SRC)/%.cpp $(CAPLET_INCLUDE)
 	$(MPICXX) $(FLAG) $(DEF_MPI) -c $< -o $@
 
 capletOpenMP: $(CAPLET_OPENMP_OBJ)
 	$(MPICXX) $(FLAG) $(DEF_OPENMP) -o $(BIN)/$@ $^ $(LIB) 
 
-$(OBJ_OPENMP)/%.o: $(SRC)/%.cpp
+$(OBJ_OPENMP)/%.o: $(SRC)/%.cpp $(CAPLET_INCLUDE)
 	$(MPICXX) $(FLAG) $(DEF_OPENMP) -c $< -o $@
 
 .phony: clean
