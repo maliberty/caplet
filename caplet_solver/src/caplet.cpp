@@ -120,53 +120,53 @@ Caplet::Caplet()
 
 Caplet::~Caplet()
 {
-  this->clear();
+  clear();
 }
 
 void Caplet::clear()
 {
-  if (this->isLoaded == true) {
-    this->isLoaded = false;
-    this->isInstantiable = false;
+  if (isLoaded == true) {
+    isLoaded = false;
+    isInstantiable = false;
 
-    delete[] this->nWirePanels;
-    delete[] this->nWireCoefs;
+    delete[] nWirePanels;
+    delete[] nWireCoefs;
 
-    delete[] this->panels;
+    delete[] panels;
 
-    delete[] this->dirs;
-    delete[] this->areas;
-    delete[] this->indexIncrements;
-    delete[] this->basisTypes;
-    delete[] this->basisDirs;
-    delete[] this->basisZs;
-    delete[] this->basisShifts;
+    delete[] dirs;
+    delete[] areas;
+    delete[] indexIncrements;
+    delete[] basisTypes;
+    delete[] basisDirs;
+    delete[] basisZs;
+    delete[] basisShifts;
 
-    if (this->isSolved == true) {
-      this->isSolved = false;
+    if (isSolved == true) {
+      isSolved = false;
 
       //* single precision version
-      switch (this->mode) {
+      switch (mode) {
         case FAST_GALERKIN:
-          delete[] this->P;
-          delete[] this->rhs;
-          delete[] this->coefs;
+          delete[] P;
+          delete[] rhs;
+          delete[] coefs;
 
-          delete[] this->Cmat;
+          delete[] Cmat;
           break;
         case DOUBLE_GALERKIN:
         case DOUBLE_COLLOCATION:
-          delete[] this->dP;
-          delete[] this->drhs;
-          delete[] this->dcoefs;
+          delete[] dP;
+          delete[] drhs;
+          delete[] dcoefs;
 
-          delete[] this->dCmat;
+          delete[] dCmat;
           break;
         default:;
       }
     }
   }
-  this->isInstantiable = false;
+  isInstantiable = false;
 }
 
 //__________________________________________________________
@@ -182,7 +182,7 @@ void Caplet::clear()
 void Caplet::loadFastcapFile(const std::string filename)
 {
   //* Clean up
-  this->clear();
+  clear();
 
   ifstream ifile(filename.c_str());
   //* Check if open successfully
@@ -192,8 +192,8 @@ void Caplet::loadFastcapFile(const std::string filename)
   }
 
   //* Initialize
-  this->nPanels = 0;
-  this->nWires = 0;
+  nPanels = 0;
+  nWires = 0;
 
   string stringTemp;
   string lineTemp;
@@ -220,7 +220,7 @@ void Caplet::loadFastcapFile(const std::string filename)
 
   while (getline(ifile, lineTemp)) {
     nWirePanelTemp++;
-    this->nPanels++;
+    nPanels++;
 
     std::stringstream stringTokenizer(lineTemp);
 
@@ -277,7 +277,7 @@ void Caplet::loadFastcapFile(const std::string filename)
     if (currentConductorName.compare(stringTemp) != 0) {  // is different
       //* change to another conductor
       currentConductorName = stringTemp;
-      this->nWires++;
+      nWires++;
       nWirePanelsList.push_back(nWirePanelTemp);
       nWirePanelTemp = 0;
     }
@@ -288,87 +288,81 @@ void Caplet::loadFastcapFile(const std::string filename)
   //* Collect all information from the .caplet file until here
   //  fill in and allocate each array and field below
 
-  this->nCoefs = this->nPanels;
+  nCoefs = nPanels;
 
   //* Convert nWirePanelsList to the nWirePanels array
-  this->nWirePanels = new int[this->nWires];
-  this->nWireCoefs = new int[this->nWires];
+  nWirePanels = new int[nWires];
+  nWireCoefs = new int[nWires];
   int i = 0;
   for (std::list<int>::iterator it = ++nWirePanelsList.begin();
        it != nWirePanelsList.end();
        ++it) {
-    this->nWirePanels[i] = *it;
-    this->nWireCoefs[i] = *it;
+    nWirePanels[i] = *it;
+    nWireCoefs[i] = *it;
     i++;
   }
 
-  this->panels = new float[this->nPanels][3][4];
-  this->dirs = new int[this->nPanels];
-  this->areas = new float[this->nPanels];
-  for (int i = 0; i < this->nPanels; i++) {
-    this->panels[i][X][MIN] = x1.front();
+  panels = new float[nPanels][3][4];
+  dirs = new int[nPanels];
+  areas = new float[nPanels];
+  for (int i = 0; i < nPanels; i++) {
+    panels[i][X][MIN] = x1.front();
     x1.pop_front();
-    this->panels[i][X][MAX] = x2.front();
+    panels[i][X][MAX] = x2.front();
     x2.pop_front();
-    this->panels[i][X][LENGTH]
-        = this->panels[i][X][MAX] - this->panels[i][X][MIN];
-    this->panels[i][X][CENTER]
-        = (this->panels[i][X][MAX] + this->panels[i][X][MIN]) / 2;
+    panels[i][X][LENGTH] = panels[i][X][MAX] - panels[i][X][MIN];
+    panels[i][X][CENTER] = (panels[i][X][MAX] + panels[i][X][MIN]) / 2;
 
-    this->panels[i][Y][MIN] = y1.front();
+    panels[i][Y][MIN] = y1.front();
     y1.pop_front();
-    this->panels[i][Y][MAX] = y2.front();
+    panels[i][Y][MAX] = y2.front();
     y2.pop_front();
-    this->panels[i][Y][LENGTH]
-        = this->panels[i][Y][MAX] - this->panels[i][Y][MIN];
-    this->panels[i][Y][CENTER]
-        = (this->panels[i][Y][MAX] + this->panels[i][Y][MIN]) / 2;
+    panels[i][Y][LENGTH] = panels[i][Y][MAX] - panels[i][Y][MIN];
+    panels[i][Y][CENTER] = (panels[i][Y][MAX] + panels[i][Y][MIN]) / 2;
 
-    this->panels[i][Z][MIN] = z1.front();
+    panels[i][Z][MIN] = z1.front();
     z1.pop_front();
-    this->panels[i][Z][MAX] = z2.front();
+    panels[i][Z][MAX] = z2.front();
     z2.pop_front();
-    this->panels[i][Z][LENGTH]
-        = this->panels[i][Z][MAX] - this->panels[i][Z][MIN];
-    this->panels[i][Z][CENTER]
-        = (this->panels[i][Z][MAX] + this->panels[i][Z][MIN]) / 2;
+    panels[i][Z][LENGTH] = panels[i][Z][MAX] - panels[i][Z][MIN];
+    panels[i][Z][CENTER] = (panels[i][Z][MAX] + panels[i][Z][MIN]) / 2;
 
-    if (std::abs(this->panels[i][X][LENGTH]) < zero) {  // in x-dir
-      this->dirs[i] = X;
-      this->areas[i] = this->panels[i][Y][LENGTH] * this->panels[i][Z][LENGTH];
-    } else if (std::abs(this->panels[i][Y][LENGTH]) < zero) {  // in y-dir
-      this->dirs[i] = Y;
-      this->areas[i] = this->panels[i][Z][LENGTH] * this->panels[i][X][LENGTH];
+    if (std::abs(panels[i][X][LENGTH]) < zero) {  // in x-dir
+      dirs[i] = X;
+      areas[i] = panels[i][Y][LENGTH] * panels[i][Z][LENGTH];
+    } else if (std::abs(panels[i][Y][LENGTH]) < zero) {  // in y-dir
+      dirs[i] = Y;
+      areas[i] = panels[i][Z][LENGTH] * panels[i][X][LENGTH];
     } else {  // in z-dir
-      this->dirs[i] = Z;
-      this->areas[i] = this->panels[i][X][LENGTH] * this->panels[i][Y][LENGTH];
+      dirs[i] = Z;
+      areas[i] = panels[i][X][LENGTH] * panels[i][Y][LENGTH];
     }
   }
 
   //* For a uniform treatment of generateRHS
-  this->indexIncrements = new int[this->nPanels];
-  this->basisTypes = new char[this->nPanels];
-  for (int i = 0; i < this->nPanels; i++) {
-    this->indexIncrements[i] = 1;
-    this->basisTypes[i] = 'F';
+  indexIncrements = new int[nPanels];
+  basisTypes = new char[nPanels];
+  for (int i = 0; i < nPanels; i++) {
+    indexIncrements[i] = 1;
+    basisTypes[i] = 'F';
   }
 
   //* Allocate dummy array for a uniform clear operation
-  this->basisDirs = new int[this->nPanels];
-  for (int i = 0; i < this->nPanels; i++) {
-    this->basisDirs[i] = FLAT;
+  basisDirs = new int[nPanels];
+  for (int i = 0; i < nPanels; i++) {
+    basisDirs[i] = FLAT;
   }
-  this->basisZs = new float[1];
-  this->basisShifts = new float[1];
+  basisZs = new float[1];
+  basisShifts = new float[1];
 
   //* Set flags
-  this->isSolved = false;
-  this->isLoaded = true;
+  isSolved = false;
+  isLoaded = true;
 
   ifile.close();
 
 #ifdef DEBUG_ASPECT_RATIO_VALIDITY
-  if (this->isPanelAspectRatioValid() == false) {
+  if (isPanelAspectRatioValid() == false) {
     cerr << "ERROR: Panel aspect ratio of FASTCAP file is not valid." << endl;
     exit(1);
   }
@@ -402,8 +396,8 @@ void Caplet::loadCapletFile(const std::string filename)
   //*   negative: decaying in the negative direction
   //* shapeShift: shift parameter that indicates the shift of starting point of
 
-  this->clear();
-  this->isInstantiable = true;
+  clear();
+  isInstantiable = true;
 
   ifstream ifile(filename.c_str());
   //* Check if open successfully
@@ -412,92 +406,83 @@ void Caplet::loadCapletFile(const std::string filename)
     return;
   }
 
-  ifile >> this->nWires;
-  this->nWirePanels = new int[this->nWires];
-  this->Cmat = new float[this->nWires * this->nWires];
-  for (int i = 0; i < this->nWires; i++) {
-    ifile >> this->nWirePanels[i];
+  ifile >> nWires;
+  nWirePanels = new int[nWires];
+  Cmat = new float[nWires * nWires];
+  for (int i = 0; i < nWires; i++) {
+    ifile >> nWirePanels[i];
   }
-  ifile >> this->nPanels;
-  this->panels = new float[this->nPanels][3][4];
-  this->dirs = new int[this->nPanels];
-  this->areas = new float[this->nPanels];
-  this->indexIncrements = new int[this->nPanels];
-  this->basisTypes = new char[this->nPanels];
-  this->basisDirs = new int[this->nPanels];
-  this->basisZs = new float[this->nPanels];
-  this->basisShifts = new float[this->nPanels];
+  ifile >> nPanels;
+  panels = new float[nPanels][3][4];
+  dirs = new int[nPanels];
+  areas = new float[nPanels];
+  indexIncrements = new int[nPanels];
+  basisTypes = new char[nPanels];
+  basisDirs = new int[nPanels];
+  basisZs = new float[nPanels];
+  basisShifts = new float[nPanels];
 
-  this->nCoefs = 0;
+  nCoefs = 0;
 
-  for (int i = 0; i < this->nPanels; i++) {
-    ifile >> this->basisTypes[i];
-    ifile >> this->indexIncrements[i];
-    this->nCoefs += this->indexIncrements[i];
+  for (int i = 0; i < nPanels; i++) {
+    ifile >> basisTypes[i];
+    ifile >> indexIncrements[i];
+    nCoefs += indexIncrements[i];
 
-    ifile >> this->panels[i][X][MIN];
-    ifile >> this->panels[i][X][MAX];
-    this->panels[i][X][LENGTH]
-        = this->panels[i][X][MAX] - this->panels[i][X][MIN];
-    this->panels[i][X][CENTER]
-        = (this->panels[i][X][MAX] + this->panels[i][X][MIN]) / 2;
+    ifile >> panels[i][X][MIN];
+    ifile >> panels[i][X][MAX];
+    panels[i][X][LENGTH] = panels[i][X][MAX] - panels[i][X][MIN];
+    panels[i][X][CENTER] = (panels[i][X][MAX] + panels[i][X][MIN]) / 2;
 
-    ifile >> this->panels[i][Y][MIN];
-    ifile >> this->panels[i][Y][MAX];
-    this->panels[i][Y][LENGTH]
-        = this->panels[i][Y][MAX] - this->panels[i][Y][MIN];
-    this->panels[i][Y][CENTER]
-        = (this->panels[i][Y][MAX] + this->panels[i][Y][MIN]) / 2;
+    ifile >> panels[i][Y][MIN];
+    ifile >> panels[i][Y][MAX];
+    panels[i][Y][LENGTH] = panels[i][Y][MAX] - panels[i][Y][MIN];
+    panels[i][Y][CENTER] = (panels[i][Y][MAX] + panels[i][Y][MIN]) / 2;
 
-    ifile >> this->panels[i][Z][MIN];
-    ifile >> this->panels[i][Z][MAX];
-    this->panels[i][Z][LENGTH]
-        = this->panels[i][Z][MAX] - this->panels[i][Z][MIN];
-    this->panels[i][Z][CENTER]
-        = (this->panels[i][Z][MAX] + this->panels[i][Z][MIN]) / 2;
+    ifile >> panels[i][Z][MIN];
+    ifile >> panels[i][Z][MAX];
+    panels[i][Z][LENGTH] = panels[i][Z][MAX] - panels[i][Z][MIN];
+    panels[i][Z][CENTER] = (panels[i][Z][MAX] + panels[i][Z][MIN]) / 2;
 
-    ifile >> this->dirs[i];
-    switch (this->dirs[i]) {
+    ifile >> dirs[i];
+    switch (dirs[i]) {
       case X:
-        this->areas[i]
-            = this->panels[i][Y][LENGTH] * this->panels[i][Z][LENGTH];
+        areas[i] = panels[i][Y][LENGTH] * panels[i][Z][LENGTH];
         break;
       case Y:
-        this->areas[i]
-            = this->panels[i][Z][LENGTH] * this->panels[i][X][LENGTH];
+        areas[i] = panels[i][Z][LENGTH] * panels[i][X][LENGTH];
         break;
       case Z:
-        this->areas[i]
-            = this->panels[i][X][LENGTH] * this->panels[i][Y][LENGTH];
+        areas[i] = panels[i][X][LENGTH] * panels[i][Y][LENGTH];
     }
 
-    ifile >> this->basisDirs[i];
-    ifile >> this->basisZs[i];
-    ifile >> this->basisShifts[i];
+    ifile >> basisDirs[i];
+    ifile >> basisZs[i];
+    ifile >> basisShifts[i];
   }
 
-  // this->P 	= new float[this->nCoefs*this->nCoefs];
-  // this->rhs 	= new float[this->nCoefs*this->nWires];
-  // this->coefs = new float[this->nCoefs*this->nWires];
+  // P 	= new float[nCoefs*nCoefs];
+  // rhs 	= new float[nCoefs*nWires];
+  // coefs = new float[nCoefs*nWires];
 
   // construct nWireCoefs
-  this->nWireCoefs = new int[this->nWires];
+  nWireCoefs = new int[nWires];
   int ind = -1;
-  for (int i = 0; i < this->nWires; i++) {
-    this->nWireCoefs[i] = 0;
-    for (int j = 0; j < this->nWirePanels[i]; j++) {
+  for (int i = 0; i < nWires; i++) {
+    nWireCoefs[i] = 0;
+    for (int j = 0; j < nWirePanels[i]; j++) {
       ind++;
-      this->nWireCoefs[i] += this->indexIncrements[ind];
+      nWireCoefs[i] += indexIncrements[ind];
     }
   }
 
-  this->isSolved = false;
-  this->isLoaded = true;
+  isSolved = false;
+  isLoaded = true;
 
   ifile.close();
 
 #ifdef DEBUG_ASPECT_RATIO_VALIDITY
-  if (this->isPanelAspectRatioValid() == false) {
+  if (isPanelAspectRatioValid() == false) {
     cerr << "ERROR: Panel aspect ratio of CAPLET file is not valid." << endl;
     exit(1);
   }
@@ -506,27 +491,27 @@ void Caplet::loadCapletFile(const std::string filename)
 
 void Caplet::saveCmat(const std::string filename)
 {
-  if (this->isSolved) {
+  if (isSolved) {
     std::ofstream ofile(filename.c_str());
     if (!ofile.is_open()) {
       cerr << "ERROR: cannot write Cmat file: " << filename << endl;
       return;
     }
     //* DOUBLE block was commented before. Double check this.
-    switch (this->mode) {
+    switch (mode) {
       case FAST_GALERKIN:
-        for (int i = 0; i < this->nWires; i++) {
-          for (int j = 0; j < this->nWires; j++) {
-            ofile << this->Cmat[i + this->nWires * j] << " ";
+        for (int i = 0; i < nWires; i++) {
+          for (int j = 0; j < nWires; j++) {
+            ofile << Cmat[i + nWires * j] << " ";
           }
           ofile << endl;
         }
         break;
       case DOUBLE_GALERKIN:
       case DOUBLE_COLLOCATION:
-        for (int i = 0; i < this->nWires; i++) {
-          for (int j = 0; j < this->nWires; j++) {
-            ofile << this->dCmat[i + this->nWires * j] << " ";
+        for (int i = 0; i < nWires; i++) {
+          for (int j = 0; j < nWires; j++) {
+            ofile << dCmat[i + nWires * j] << " ";
           }
           ofile << endl;
         }
@@ -541,28 +526,26 @@ void Caplet::saveCmat(const std::string filename)
 
 void Caplet::saveCoefs(const std::string filename)
 {
-  if (this->isSolved) {
+  if (isSolved) {
     ofstream ofile(filename.c_str());
     if (!ofile) {
       cerr << "ERROR: cannot write the file: " << filename << endl;
       return;
     }
-    switch (this->mode) {
+    switch (mode) {
       case FAST_GALERKIN:
-        for (int i = 0; i < this->nCoefs; i++) {
-          for (int j = 0; j < this->nWires; j++) {
-            ofile << this->coefs[i + this->nCoefs * j] * 4 * pi * epsilon0
-                  << " ";
+        for (int i = 0; i < nCoefs; i++) {
+          for (int j = 0; j < nWires; j++) {
+            ofile << coefs[i + nCoefs * j] * 4 * pi * epsilon0 << " ";
           }
           ofile << endl;
         }
         break;
       case DOUBLE_GALERKIN:
       case DOUBLE_COLLOCATION:
-        for (int i = 0; i < this->nCoefs; i++) {
-          for (int j = 0; j < this->nWires; j++) {
-            ofile << this->dcoefs[i + this->nCoefs * j] * 4 * pi * epsilon0
-                  << " ";
+        for (int i = 0; i < nCoefs; i++) {
+          for (int j = 0; j < nWires; j++) {
+            ofile << dcoefs[i + nCoefs * j] * 4 * pi * epsilon0 << " ";
           }
           ofile << endl;
         }
@@ -576,12 +559,12 @@ void Caplet::saveCoefs(const std::string filename)
 
 void Caplet::extractC(MODE mode)
 {
-  this->mode = mode;
+  mode = mode;
 
 #ifdef CAPLET_TIMER
-  this->fillingTime = 0;
-  this->solvingTime = 0;
-  this->totalTime = 0;
+  fillingTime = 0;
+  solvingTime = 0;
+  totalTime = 0;
 #endif
 
 #ifdef CAPLET_INIT_ATAN_LOG
@@ -594,27 +577,27 @@ void Caplet::extractC(MODE mode)
   int rank = MPI::COMM_WORLD.Get_rank();
 
   //* Subdivide panels if aspect ratio is too large
-  this->modifyPanelAspectRatio();
+  modifyPanelAspectRatio();
 
   if (rank == 0) {
-    std::cout << "Number of conductors        : " << this->nWires << std::endl;
-    std::cout << "Number of basis functions   : " << this->nCoefs << std::endl;
-    std::cout << "Number of basis shapes      : " << this->nPanels << std::endl;
+    std::cout << "Number of conductors        : " << nWires << std::endl;
+    std::cout << "Number of basis functions   : " << nCoefs << std::endl;
+    std::cout << "Number of basis shapes      : " << nPanels << std::endl;
   }
   for (int iter = 0; iter < N_ITER; iter++) {
     switch (mode) {
       case DOUBLE_GALERKIN:
-        this->extractCGalerkinDouble();
+        extractCGalerkinDouble();
         break;
       case FAST_GALERKIN:
-        this->extractCGalerkin();
+        extractCGalerkin();
         break;
       case DOUBLE_COLLOCATION:
-        this->extractCCollocationDouble();
+        extractCCollocationDouble();
         break;
     }
   }
-  this->isSolved = true;
+  isSolved = true;
 
   MPI::Finalize();
   if (rank != 0) {
@@ -622,17 +605,17 @@ void Caplet::extractC(MODE mode)
   }
 
 #ifdef CAPLET_TIMER
-  std::cout << "Total extraction time (s)   : " << (this->totalTime) / N_ITER
+  std::cout << "Total extraction time (s)   : " << (totalTime) / N_ITER
             << std::endl;
-  std::cout << "  Setup time (s)            : " << (this->fillingTime) / N_ITER
+  std::cout << "  Setup time (s)            : " << (fillingTime) / N_ITER
             << std::endl;
-  std::cout << "  Solving time (s)          : " << (this->solvingTime) / N_ITER
+  std::cout << "  Solving time (s)          : " << (solvingTime) / N_ITER
             << std::endl;
 #endif
 
   //* Print Cmat
   std::cout << "Cmat" << std::endl;
-  this->printCmat();
+  printCmat();
   std::cout << endl;
 
 #ifdef DEBUG_PRINT_P
@@ -653,18 +636,18 @@ void Caplet::extractC(MODE mode)
 //*
 void Caplet::extractCCollocationDouble()
 {
-  if (this->isLoaded == true) {
+  if (isLoaded == true) {
     //* Allocate system memory for double precision
     if (MPI::COMM_WORLD.Get_rank() == 0) {
-      this->dP = new double[this->nCoefs * this->nCoefs];
-      this->drhs = new double[this->nCoefs * this->nWires];
-      this->dcoefs = new double[this->nCoefs * this->nWires];
-      this->dCmat = new double[this->nWires * this->nWires];
+      dP = new double[nCoefs * nCoefs];
+      drhs = new double[nCoefs * nWires];
+      dcoefs = new double[nCoefs * nWires];
+      dCmat = new double[nWires * nWires];
     } else {
-      this->dP = new double[1];
-      this->drhs = new double[1];
-      this->dcoefs = new double[1];
-      this->dCmat = new double[1];
+      dP = new double[1];
+      drhs = new double[1];
+      dcoefs = new double[1];
+      dCmat = new double[1];
       return;
     }
 
@@ -672,28 +655,21 @@ void Caplet::extractCCollocationDouble()
     std::cerr << "ERROR: structure file is not yet loaded" << std::endl;
   }
 #ifdef CAPLET_TIMER
-  this->timeStart = MPI::Wtime();
+  timeStart = MPI::Wtime();
 #endif
 
-  this->generateCollocationPMatrixDouble();
-  this->generateRHSDouble();
+  generateCollocationPMatrixDouble();
+  generateRHSDouble();
 
 #ifdef CAPLET_TIMER
-  this->timeAfterFilling = MPI::Wtime();
+  timeAfterFilling = MPI::Wtime();
 #endif
 
   //* Solve the system
-  int* ipiv = new int[this->nCoefs];
+  int* ipiv = new int[nCoefs];
   int info;
 
-  dgesv_(&this->nCoefs,
-         &this->nWires,
-         this->dP,
-         &this->nCoefs,
-         ipiv,
-         this->dcoefs,
-         &this->nCoefs,
-         &info);
+  dgesv_(&nCoefs, &nWires, dP, &nCoefs, ipiv, dcoefs, &nCoefs, &info);
 
   delete[] ipiv;
 
@@ -705,23 +681,23 @@ void Caplet::extractCCollocationDouble()
   //* Use matrix-matrix product to compute Cmat from coefs
   dgemm_(&transA,
          &transB,
-         &this->nWires,
-         &this->nWires,
-         &this->nCoefs,
+         &nWires,
+         &nWires,
+         &nCoefs,
          &alpha,
-         this->drhs,
-         &this->nCoefs,
-         this->dcoefs,
-         &this->nCoefs,
+         drhs,
+         &nCoefs,
+         dcoefs,
+         &nCoefs,
          &beta,
-         this->dCmat,
-         &this->nWires);
+         dCmat,
+         &nWires);
 
 #ifdef CAPLET_TIMER
-  this->timeAfterSolving = MPI::Wtime();
-  this->fillingTime += this->timeAfterFilling - this->timeStart;
-  this->solvingTime += this->timeAfterSolving - this->timeAfterFilling;
-  this->totalTime += this->timeAfterSolving - this->timeStart;
+  timeAfterSolving = MPI::Wtime();
+  fillingTime += timeAfterFilling - timeStart;
+  solvingTime += timeAfterSolving - timeAfterFilling;
+  totalTime += timeAfterSolving - timeStart;
 #endif
 }
 
@@ -765,13 +741,13 @@ double Caplet::calCollocationPEntryDouble(int panel1, int panel2)
   //* Rotate, mirror, and call proper integrals
   switch (dirs[panel2]) {
     case X:
-      this->rotateX2Z(coord_ptr_1, panel1);
-      this->rotateX2Z(coord_ptr_2, panel2);
+      rotateX2Z(coord_ptr_1, panel1);
+      rotateX2Z(coord_ptr_2, panel2);
       return calColD(coord_ptr_1, coord_ptr_2);
       break;
     case Y:
-      this->rotateY2Z(coord_ptr_1, panel1);
-      this->rotateY2Z(coord_ptr_2, panel2);
+      rotateY2Z(coord_ptr_1, panel1);
+      rotateY2Z(coord_ptr_2, panel2);
       return calColD(coord_ptr_1, coord_ptr_2);
       break;
     case Z:
@@ -784,35 +760,35 @@ double Caplet::calCollocationPEntryDouble(int panel1, int panel2)
 void Caplet::generateRHSDouble()
 {
   int inc = 1;
-  int nRHS = this->nWires * this->nCoefs;
+  int nRHS = nWires * nCoefs;
   double alpha = 0.0f;
-  dscal_(&nRHS, &alpha, this->dcoefs, &inc);
+  dscal_(&nRHS, &alpha, dcoefs, &inc);
 
   int rowIndex = -1;
   int columnIndex = 0;
   int coefCounter = 0;
-  for (int i = 0; i < this->nPanels; i++) {
-    rowIndex += this->indexIncrements[i];
-    coefCounter += this->indexIncrements[i];
+  for (int i = 0; i < nPanels; i++) {
+    rowIndex += indexIncrements[i];
+    coefCounter += indexIncrements[i];
 
-    if (coefCounter > this->nWireCoefs[columnIndex]) {
+    if (coefCounter > nWireCoefs[columnIndex]) {
       coefCounter = 1;
       columnIndex++;
     }
 
     float (*func)(float x, float w) = &arch;
-    switch (this->basisTypes[i]) {
+    switch (basisTypes[i]) {
       case 'S':
         func = &side;
       case 'A':
-        float b = this->panels[i][this->basisDirs[i]][LENGTH];
+        float b = panels[i][basisDirs[i]][LENGTH];
         float xm = (b) / 2;
         float xr = (b) / 2;
-        int dir = (this->basisDirs[i] + 1) % 3;
+        int dir = (basisDirs[i] + 1) % 3;
         if (dir == dirs[i]) {
           dir = (dir + 1) % 3;
         }
-        float w = this->panels[i][dir][LENGTH];
+        float w = panels[i][dir][LENGTH];
 
         //* Gauss quad for computing area integral of shapes
         float val = 0;
@@ -829,11 +805,11 @@ void Caplet::generateRHSDouble()
         }
         //* End of Gauss quad
 
-        this->areas[i] = val * xr * w;
+        areas[i] = val * xr * w;
     }
-    this->dcoefs[columnIndex * this->nCoefs + rowIndex] += this->areas[i];
+    dcoefs[columnIndex * nCoefs + rowIndex] += areas[i];
   }
-  dcopy_(&nRHS, this->dcoefs, &inc, this->drhs, &inc);
+  dcopy_(&nRHS, dcoefs, &inc, drhs, &inc);
 }
 
 //__________________________________________________________
@@ -844,29 +820,29 @@ void Caplet::extractCGalerkinDouble()
 {
   int rank = MPI::COMM_WORLD.Get_rank();
 
-  if (this->isLoaded == true) {
+  if (isLoaded == true) {
     if (rank == 0) {
-      this->dP = new double[this->nCoefs * this->nCoefs];
+      dP = new double[nCoefs * nCoefs];
     } else {
-      this->dP = new double[1];
+      dP = new double[1];
     }
 
-    this->drhs = new double[this->nCoefs * this->nWires];
-    this->dcoefs = new double[this->nCoefs * this->nWires];
-    this->dCmat = new double[this->nWires * this->nWires];
+    drhs = new double[nCoefs * nWires];
+    dcoefs = new double[nCoefs * nWires];
+    dCmat = new double[nWires * nWires];
 
   } else {
     std::cerr << "ERROR: structure file is not yet loaded" << std::endl;
   }
 #ifdef CAPLET_TIMER
-  this->timeStart = MPI::Wtime();
+  timeStart = MPI::Wtime();
   ;
 #endif
 
 #ifdef CAPLET_MPI
-  this->generateGalerkinPMatrixDoubleMPI();
+  generateGalerkinPMatrixDoubleMPI();
 #else
-  this->generateGalerkinPMatrixDouble();
+  generateGalerkinPMatrixDouble();
 #endif
 
   if (MPI::COMM_WORLD.Get_rank() != 0) {
@@ -874,10 +850,10 @@ void Caplet::extractCGalerkinDouble()
   }
   //* End of core with non-zero rank
 
-  this->generateRHSDouble();
+  generateRHSDouble();
 
 #ifdef CAPLET_TIMER
-  this->timeAfterFilling = MPI::Wtime();
+  timeAfterFilling = MPI::Wtime();
   ;
 #endif
 
@@ -888,14 +864,14 @@ void Caplet::extractCGalerkinDouble()
   //* Query optimal workspace size
   double* work = new double[1];
   int lwork = -1;
-  int* ipiv = new int[this->nCoefs];
+  int* ipiv = new int[nCoefs];
   dsysv_(&uplo,
          &nCoefs,
          &nWires,
          dP,
          &nCoefs,
          ipiv,
-         this->dcoefs,
+         dcoefs,
          &nCoefs,
          work,
          &lwork,
@@ -911,7 +887,7 @@ void Caplet::extractCGalerkinDouble()
          dP,
          &nCoefs,
          ipiv,
-         this->dcoefs,
+         dcoefs,
          &nCoefs,
          work,
          &lwork,
@@ -926,24 +902,24 @@ void Caplet::extractCGalerkinDouble()
   double beta = 0.0;
   dgemm_(&transA,
          &transB,
-         &this->nWires,
-         &this->nWires,
-         &this->nCoefs,
+         &nWires,
+         &nWires,
+         &nCoefs,
          &alpha,
-         this->drhs,
-         &this->nCoefs,
-         this->dcoefs,
-         &this->nCoefs,
+         drhs,
+         &nCoefs,
+         dcoefs,
+         &nCoefs,
          &beta,
-         this->dCmat,
-         &this->nWires);
+         dCmat,
+         &nWires);
 
 #ifdef CAPLET_TIMER
-  this->timeAfterSolving = MPI::Wtime();
+  timeAfterSolving = MPI::Wtime();
 
-  this->fillingTime += this->timeAfterFilling - this->timeStart;
-  this->solvingTime += this->timeAfterSolving - this->timeAfterFilling;
-  this->totalTime += this->timeAfterSolving - this->timeStart;
+  fillingTime += timeAfterFilling - timeStart;
+  solvingTime += timeAfterSolving - timeAfterFilling;
+  totalTime += timeAfterSolving - timeStart;
 #endif
 }
 
@@ -955,40 +931,40 @@ void Caplet::extractCGalerkin()
 {
   int rank = MPI::COMM_WORLD.Get_rank();
 
-  if (this->isLoaded == true) {
+  if (isLoaded == true) {
     if (rank == 0) {
-      this->P = new float[this->nCoefs * this->nCoefs];
+      P = new float[nCoefs * nCoefs];
     } else {
-      this->P = new float[1];
+      P = new float[1];
     }
 
-    this->rhs = new float[this->nCoefs * this->nWires];
-    this->coefs = new float[this->nCoefs * this->nWires];
-    this->Cmat = new float[this->nWires * this->nWires];
+    rhs = new float[nCoefs * nWires];
+    coefs = new float[nCoefs * nWires];
+    Cmat = new float[nWires * nWires];
 
   } else {
     std::cerr << "ERROR: structure file is not yet loaded" << std::endl;
   }
 #ifdef CAPLET_TIMER
-  this->timeStart = MPI::Wtime();
+  timeStart = MPI::Wtime();
   ;
 #endif
 
 #ifdef CAPLET_MPI
-  this->generateGalerkinPMatrixMPI();
+  generateGalerkinPMatrixMPI();
 #endif
 
 #ifndef CAPLET_MPI
-  this->generateGalerkinPMatrix();
+  generateGalerkinPMatrix();
 #endif
 
   if (MPI::COMM_WORLD.Get_rank() != 0) {
     return;
   }
-  this->generateRHS();
+  generateRHS();
 
 #ifdef CAPLET_TIMER
-  this->timeAfterFilling = MPI::Wtime();
+  timeAfterFilling = MPI::Wtime();
   ;
 #endif
 
@@ -999,7 +975,7 @@ void Caplet::extractCGalerkin()
   //* Query optimal workspace size
   float* work = new float[1];
   int lwork = -1;
-  int* ipiv = new int[this->nCoefs];
+  int* ipiv = new int[nCoefs];
   ssysv_(&uplo,
          &nCoefs,
          &nWires,
@@ -1037,24 +1013,24 @@ void Caplet::extractCGalerkin()
   float beta = 0.0;
   sgemm_(&transA,
          &transB,
-         &this->nWires,
-         &this->nWires,
-         &this->nCoefs,
+         &nWires,
+         &nWires,
+         &nCoefs,
          &alpha,
-         this->rhs,
-         &this->nCoefs,
-         this->coefs,
-         &this->nCoefs,
+         rhs,
+         &nCoefs,
+         coefs,
+         &nCoefs,
          &beta,
-         this->Cmat,
-         &this->nWires);
+         Cmat,
+         &nWires);
 
 #ifdef CAPLET_TIMER
-  this->timeAfterSolving = MPI::Wtime();
+  timeAfterSolving = MPI::Wtime();
 
-  this->fillingTime += this->timeAfterFilling - this->timeStart;
-  this->solvingTime += this->timeAfterSolving - this->timeAfterFilling;
-  this->totalTime += this->timeAfterSolving - this->timeStart;
+  fillingTime += timeAfterFilling - timeStart;
+  solvingTime += timeAfterSolving - timeAfterFilling;
+  totalTime += timeAfterSolving - timeStart;
 #endif
 }
 
@@ -1175,7 +1151,7 @@ void Caplet::generateGalerkinPMatrixMPI()
   float* ptrP;
   float* tempP;
   if (rank == 0) {
-    //* init this->P
+    //* init P
     float zero = 0.0f;
     int inc = 1;
     int nP = nCoefs * nCoefs;
@@ -1183,7 +1159,7 @@ void Caplet::generateGalerkinPMatrixMPI()
     //* init tempP to cover the largest number of columns among all proccesses.
     int nTempP = maxNC * nCoefs;
     tempP = new float[nTempP];
-    ptrP = this->P;
+    ptrP = P;
   } else {
     float zero = 0.0f;
     int inc = 1;
@@ -1293,7 +1269,7 @@ void Caplet::generateGalerkinPMatrixDoubleMPI()
   double* ptrP;
   double* tempP;
   if (rank == 0) {
-    //* init this->dP
+    //* init dP
     double zero = 0.0;
     int inc = 1;
     int nP = nCoefs * nCoefs;
@@ -1301,7 +1277,7 @@ void Caplet::generateGalerkinPMatrixDoubleMPI()
     //* init tempP to cover the largest number of columns among all proccesses.
     int nTempP = maxNC * nCoefs;
     tempP = new double[nTempP];
-    ptrP = this->dP;
+    ptrP = dP;
   } else {
     double zero = 0.0;
     int inc = 1;
@@ -1375,7 +1351,7 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
   float* coord_ptr_1[3][4];
   float* coord_ptr_2[3][4];
 
-  if (this->basisTypes[panel1] == 'F') {
+  if (basisTypes[panel1] == 'F') {
     int temp = panel1;
     panel1 = panel2;
     panel2 = temp;
@@ -1390,8 +1366,8 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
     case X:
       switch (basisDirs[panel1]) {
         case Y:  // Xy
-          this->rotateX2Z(coord_ptr_1, panel1);
-          this->rotateX2Z(coord_ptr_2, panel2);
+          rotateX2Z(coord_ptr_1, panel1);
+          rotateX2Z(coord_ptr_2, panel2);
           switch (dirs[panel2]) {
             case X:  // Xy_X
               switch (basisDirs[panel2]) {
@@ -1476,8 +1452,8 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
               }
           }
         case Z:  // Xz
-          this->mirrorX2Z(coord_ptr_1, panel1);
-          this->mirrorX2Z(coord_ptr_2, panel2);
+          mirrorX2Z(coord_ptr_1, panel1);
+          mirrorX2Z(coord_ptr_2, panel2);
           switch (dirs[panel2]) {
             case X:
               switch (basisDirs[panel2]) {
@@ -1565,24 +1541,24 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
         case FLAT:  // Xf-?f
           switch (dirs[panel2]) {
             case X:  // Xf_Xf
-              this->mirrorX2Z(coord_ptr_1, panel1);
-              this->mirrorX2Z(coord_ptr_2, panel2);
+              mirrorX2Z(coord_ptr_1, panel1);
+              mirrorX2Z(coord_ptr_2, panel2);
               return intZFZF(coord_ptr_1, coord_ptr_2);
             case Y:  // Xf_Yf
-              this->rotateX2Z(coord_ptr_1, panel1);
-              this->rotateX2Z(coord_ptr_2, panel2);
+              rotateX2Z(coord_ptr_1, panel1);
+              rotateX2Z(coord_ptr_2, panel2);
               return intZFXF(coord_ptr_1, coord_ptr_2);
             case Z:  // Xf_Zf
-              this->mirrorX2Z(coord_ptr_1, panel1);
-              this->mirrorX2Z(coord_ptr_2, panel2);
+              mirrorX2Z(coord_ptr_1, panel1);
+              mirrorX2Z(coord_ptr_2, panel2);
               return intZFXF(coord_ptr_1, coord_ptr_2);
           }
       }
     case Y:
       switch (basisDirs[panel1]) {
         case X:  // Yx
-          this->mirrorY2Z(coord_ptr_1, panel1);
-          this->mirrorY2Z(coord_ptr_2, panel2);
+          mirrorY2Z(coord_ptr_1, panel1);
+          mirrorY2Z(coord_ptr_2, panel2);
           switch (dirs[panel2]) {
             case X:  // Yx_X
               switch (basisDirs[panel2]) {
@@ -1667,8 +1643,8 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
               }
           }
         case Z:  // Yz
-          this->rotateY2Z(coord_ptr_1, panel1);
-          this->rotateY2Z(coord_ptr_2, panel2);
+          rotateY2Z(coord_ptr_1, panel1);
+          rotateY2Z(coord_ptr_2, panel2);
           switch (dirs[panel2]) {
             case X:  // Yz_X
               switch (basisDirs[panel2]) {
@@ -1755,24 +1731,24 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
         case FLAT:  // Yf_?f
           switch (dirs[panel2]) {
             case X:
-              this->mirrorY2Z(coord_ptr_1, panel1);
-              this->mirrorY2Z(coord_ptr_2, panel2);
+              mirrorY2Z(coord_ptr_1, panel1);
+              mirrorY2Z(coord_ptr_2, panel2);
               return intZFXF(coord_ptr_1, coord_ptr_2);
             case Y:
-              this->mirrorY2Z(coord_ptr_1, panel1);
-              this->mirrorY2Z(coord_ptr_2, panel2);
+              mirrorY2Z(coord_ptr_1, panel1);
+              mirrorY2Z(coord_ptr_2, panel2);
               return intZFZF(coord_ptr_1, coord_ptr_2);
             case Z:
-              this->rotateY2Z(coord_ptr_1, panel1);
-              this->rotateY2Z(coord_ptr_2, panel2);
+              rotateY2Z(coord_ptr_1, panel1);
+              rotateY2Z(coord_ptr_2, panel2);
               return intZFXF(coord_ptr_1, coord_ptr_2);
           }
       }
     case Z:  // Z
       switch (basisDirs[panel1]) {
         case X:  // Zx
-          this->rotateZ2Z(coord_ptr_1, panel1);
-          this->rotateZ2Z(coord_ptr_2, panel2);
+          rotateZ2Z(coord_ptr_1, panel1);
+          rotateZ2Z(coord_ptr_2, panel2);
           switch (dirs[panel2]) {
             case X:  // Zx_X
               switch (basisDirs[panel2]) {
@@ -1857,8 +1833,8 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
               }
           }
         case Y:  // Zy
-          this->mirrorY2X(coord_ptr_1, panel1);
-          this->mirrorY2X(coord_ptr_2, panel2);
+          mirrorY2X(coord_ptr_1, panel1);
+          mirrorY2X(coord_ptr_2, panel2);
           switch (dirs[panel2]) {
             case X:  // Zy_X
               switch (basisDirs[panel2]) {
@@ -1945,16 +1921,16 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
         case FLAT:  // Zf_?f
           switch (dirs[panel2]) {
             case X:
-              this->rotateZ2Z(coord_ptr_1, panel1);
-              this->rotateZ2Z(coord_ptr_2, panel2);
+              rotateZ2Z(coord_ptr_1, panel1);
+              rotateZ2Z(coord_ptr_2, panel2);
               return intZFXF(coord_ptr_1, coord_ptr_2);
             case Y:
-              this->mirrorY2X(coord_ptr_1, panel1);
-              this->mirrorY2X(coord_ptr_2, panel2);
+              mirrorY2X(coord_ptr_1, panel1);
+              mirrorY2X(coord_ptr_2, panel2);
               return intZFXF(coord_ptr_1, coord_ptr_2);
             case Z:
-              this->rotateZ2Z(coord_ptr_1, panel1);
-              this->rotateZ2Z(coord_ptr_2, panel2);
+              rotateZ2Z(coord_ptr_1, panel1);
+              rotateZ2Z(coord_ptr_2, panel2);
               return intZFZF(coord_ptr_1, coord_ptr_2);
           }
       }
@@ -1966,35 +1942,35 @@ float Caplet::calGalerkinPEntry(int panel1, int panel2)
 void Caplet::generateRHS()
 {
   int inc = 1;
-  int nRHS = this->nWires * this->nCoefs;
+  int nRHS = nWires * nCoefs;
   float alpha = 0.0f;
-  sscal_(&nRHS, &alpha, this->coefs, &inc);
+  sscal_(&nRHS, &alpha, coefs, &inc);
 
   int rowIndex = -1;
   int columnIndex = 0;
   int coefCounter = 0;
-  for (int i = 0; i < this->nPanels; i++) {
-    rowIndex += this->indexIncrements[i];
-    coefCounter += this->indexIncrements[i];
+  for (int i = 0; i < nPanels; i++) {
+    rowIndex += indexIncrements[i];
+    coefCounter += indexIncrements[i];
 
-    if (coefCounter > this->nWireCoefs[columnIndex]) {
+    if (coefCounter > nWireCoefs[columnIndex]) {
       coefCounter = 1;
       columnIndex++;
     }
 
     float (*func)(float x, float w) = &arch;
-    switch (this->basisTypes[i]) {
+    switch (basisTypes[i]) {
       case 'S':
         func = &side;
       case 'A':
-        float b = this->panels[i][this->basisDirs[i]][LENGTH];
+        float b = panels[i][basisDirs[i]][LENGTH];
         float xm = (b) / 2;
         float xr = (b) / 2;
-        int dir = (this->basisDirs[i] + 1) % 3;
+        int dir = (basisDirs[i] + 1) % 3;
         if (dir == dirs[i]) {
           dir = (dir + 1) % 3;
         }
-        float w = this->panels[i][dir][LENGTH];
+        float w = panels[i][dir][LENGTH];
 
         //* Gauss quad for computing area integral of shapes
         float val = 0;
@@ -2011,18 +1987,18 @@ void Caplet::generateRHS()
         }
         //* End of Gauss quad
 
-        this->areas[i] = val * xr * w;
+        areas[i] = val * xr * w;
     }
 
-    this->coefs[columnIndex * this->nCoefs + rowIndex] += this->areas[i];
+    coefs[columnIndex * nCoefs + rowIndex] += areas[i];
   }
-  scopy_(&nRHS, this->coefs, &inc, this->rhs, &inc);
+  scopy_(&nRHS, coefs, &inc, rhs, &inc);
 }
 
 void Caplet::modifyPanelAspectRatio()
 {
   //* Aspect ratio of all panels cannot exceed MAX_ASPECT_RAIO
-  if (this->isLoaded == false) {
+  if (isLoaded == false) {
     std::cerr << "ERROR: not yet load any structure " << std::endl;
     std::cerr << "       Unable to check structure validity" << std::endl;
 
@@ -2041,19 +2017,19 @@ void Caplet::modifyPanelAspectRatio()
 
   int currentWireIndex = 0;
   int currentWirePanelCount = 0;
-  int nCurrentWirePanels = this->nWirePanels[0];
-  int nFinalPanels = this->nPanels;
+  int nCurrentWirePanels = nWirePanels[0];
+  int nFinalPanels = nPanels;
 
-  for (int i = 0; i < this->nPanels; i++) {
+  for (int i = 0; i < nPanels; i++) {
     currentWirePanelCount++;
-    if (currentWirePanelCount > this->nWirePanels[currentWireIndex]) {
+    if (currentWirePanelCount > nWirePanels[currentWireIndex]) {
       currentWirePanelCount = 1;
-      this->nWirePanels[currentWireIndex] = nCurrentWirePanels;
+      nWirePanels[currentWireIndex] = nCurrentWirePanels;
       currentWireIndex++;
-      nCurrentWirePanels = this->nWirePanels[currentWireIndex];
+      nCurrentWirePanels = nWirePanels[currentWireIndex];
     }
-    float ba = this->panels[i][(this->dirs[i] + 1) % 3][LENGTH]
-               / this->panels[i][(this->dirs[i] + 2) % 3][LENGTH];
+    float ba = panels[i][(dirs[i] + 1) % 3][LENGTH]
+               / panels[i][(dirs[i] + 2) % 3][LENGTH];
     if ((ba > maxRatio) || (1 / ba > maxRatio)) {
       //* need to split to reduce aspact ratio of a panel
       int nSplit = 2;
@@ -2061,8 +2037,8 @@ void Caplet::modifyPanelAspectRatio()
         nSplit++;
       }
       int splitDir = ((ba > 1) ? ((dirs[i] + 1) % 3) : ((dirs[i] + 2) % 3));
-      float currentCoord = this->panels[i][splitDir][0];
-      float sublength = this->panels[i][splitDir][LENGTH] / nSplit;
+      float currentCoord = panels[i][splitDir][0];
+      float sublength = panels[i][splitDir][LENGTH] / nSplit;
 
       for (int j = 0; j < nSplit; j++) {
         panelsTemp[splitDir][0].push_back(currentCoord);
@@ -2070,36 +2046,36 @@ void Caplet::modifyPanelAspectRatio()
         panelsTemp[splitDir][1].push_back(currentCoord);
 
         panelsTemp[(splitDir + 1) % 3][0].push_back(
-            this->panels[i][(splitDir + 1) % 3][0]);
+            panels[i][(splitDir + 1) % 3][0]);
         panelsTemp[(splitDir + 1) % 3][1].push_back(
-            this->panels[i][(splitDir + 1) % 3][1]);
+            panels[i][(splitDir + 1) % 3][1]);
         panelsTemp[(splitDir + 2) % 3][0].push_back(
-            this->panels[i][(splitDir + 2) % 3][0]);
+            panels[i][(splitDir + 2) % 3][0]);
         panelsTemp[(splitDir + 2) % 3][1].push_back(
-            this->panels[i][(splitDir + 2) % 3][1]);
+            panels[i][(splitDir + 2) % 3][1]);
 
-        dirsTemp.push_back(this->dirs[i]);
-        areasTemp.push_back(this->areas[i] / nSplit);
+        dirsTemp.push_back(dirs[i]);
+        areasTemp.push_back(areas[i] / nSplit);
         if (j == 0) {
           //* The first sub-panel after split. Needs index increment.
-          indexIncrementsTemp.push_back(this->indexIncrements[i]);
+          indexIncrementsTemp.push_back(indexIncrements[i]);
         } else {
           //* The rest of sub-panel after split. No index increment needed.
           indexIncrementsTemp.push_back(0);
         }
-        basisTypesTemp.push_back(this->basisTypes[i]);
-        basisDirsTemp.push_back(this->basisDirs[i]);
-        basisZsTemp.push_back(this->basisZs[i]);
+        basisTypesTemp.push_back(basisTypes[i]);
+        basisDirsTemp.push_back(basisDirs[i]);
+        basisZsTemp.push_back(basisZs[i]);
 
-        if (this->basisDirs[i] == splitDir) {
-          if (this->basisZs[i] > 0) {  // decaying in the positive direction
-            basisShiftsTemp.push_back(this->basisShifts[i] + j * sublength);
+        if (basisDirs[i] == splitDir) {
+          if (basisZs[i] > 0) {  // decaying in the positive direction
+            basisShiftsTemp.push_back(basisShifts[i] + j * sublength);
           } else {  // decaying in the negative direction
-            basisShiftsTemp.push_back(this->basisShifts[i]
+            basisShiftsTemp.push_back(basisShifts[i]
                                       + (nSplit - 1 - j) * sublength);
           }
         } else {
-          basisShiftsTemp.push_back(this->basisShifts[i]);
+          basisShiftsTemp.push_back(basisShifts[i]);
         }
 
         if (j != 0) {
@@ -2109,90 +2085,87 @@ void Caplet::modifyPanelAspectRatio()
       }
     } else {
       //* no need to split. simply push back
-      panelsTemp[X][0].push_back(this->panels[i][X][0]);
-      panelsTemp[X][1].push_back(this->panels[i][X][1]);
-      panelsTemp[Y][0].push_back(this->panels[i][Y][0]);
-      panelsTemp[Y][1].push_back(this->panels[i][Y][1]);
-      panelsTemp[Z][0].push_back(this->panels[i][Z][0]);
-      panelsTemp[Z][1].push_back(this->panels[i][Z][1]);
+      panelsTemp[X][0].push_back(panels[i][X][0]);
+      panelsTemp[X][1].push_back(panels[i][X][1]);
+      panelsTemp[Y][0].push_back(panels[i][Y][0]);
+      panelsTemp[Y][1].push_back(panels[i][Y][1]);
+      panelsTemp[Z][0].push_back(panels[i][Z][0]);
+      panelsTemp[Z][1].push_back(panels[i][Z][1]);
 
-      dirsTemp.push_back(this->dirs[i]);
-      areasTemp.push_back(this->areas[i]);
-      indexIncrementsTemp.push_back(this->indexIncrements[i]);
-      basisTypesTemp.push_back(this->basisTypes[i]);
-      basisDirsTemp.push_back(this->basisDirs[i]);
-      basisZsTemp.push_back(this->basisZs[i]);
-      basisShiftsTemp.push_back(this->basisShifts[i]);
+      dirsTemp.push_back(dirs[i]);
+      areasTemp.push_back(areas[i]);
+      indexIncrementsTemp.push_back(indexIncrements[i]);
+      basisTypesTemp.push_back(basisTypes[i]);
+      basisDirsTemp.push_back(basisDirs[i]);
+      basisZsTemp.push_back(basisZs[i]);
+      basisShiftsTemp.push_back(basisShifts[i]);
     }
   }
-  this->nPanels = nFinalPanels;
-  this->nWirePanels[currentWireIndex] = nCurrentWirePanels;
+  nPanels = nFinalPanels;
+  nWirePanels[currentWireIndex] = nCurrentWirePanels;
 
   //* Rebuild panel information based on new panel list with split panels
-  delete[] this->panels;
-  delete[] this->dirs;
-  delete[] this->indexIncrements;
-  delete[] this->basisTypes;
-  delete[] this->basisDirs;
-  delete[] this->basisZs;
-  delete[] this->basisShifts;
+  delete[] panels;
+  delete[] dirs;
+  delete[] indexIncrements;
+  delete[] basisTypes;
+  delete[] basisDirs;
+  delete[] basisZs;
+  delete[] basisShifts;
 
-  this->panels = new float[this->nPanels][3][4];
-  this->dirs = new int[this->nPanels];
-  this->areas = new float[this->nPanels];
-  this->indexIncrements = new int[this->nPanels];
-  this->basisTypes = new char[this->nPanels];
-  this->basisDirs = new int[this->nPanels];
-  this->basisZs = new float[this->nPanels];
-  this->basisShifts = new float[this->nPanels];
+  panels = new float[nPanels][3][4];
+  dirs = new int[nPanels];
+  areas = new float[nPanels];
+  indexIncrements = new int[nPanels];
+  basisTypes = new char[nPanels];
+  basisDirs = new int[nPanels];
+  basisZs = new float[nPanels];
+  basisShifts = new float[nPanels];
 
-  for (int i = 0; i < this->nPanels; i++) {
-    this->panels[i][X][0] = panelsTemp[X][0].front();
+  for (int i = 0; i < nPanels; i++) {
+    panels[i][X][0] = panelsTemp[X][0].front();
     panelsTemp[X][0].pop_front();
-    this->panels[i][X][1] = panelsTemp[X][1].front();
+    panels[i][X][1] = panelsTemp[X][1].front();
     panelsTemp[X][1].pop_front();
-    this->panels[i][Y][0] = panelsTemp[Y][0].front();
+    panels[i][Y][0] = panelsTemp[Y][0].front();
     panelsTemp[Y][0].pop_front();
-    this->panels[i][Y][1] = panelsTemp[Y][1].front();
+    panels[i][Y][1] = panelsTemp[Y][1].front();
     panelsTemp[Y][1].pop_front();
-    this->panels[i][Z][0] = panelsTemp[Z][0].front();
+    panels[i][Z][0] = panelsTemp[Z][0].front();
     panelsTemp[Z][0].pop_front();
-    this->panels[i][Z][1] = panelsTemp[Z][1].front();
+    panels[i][Z][1] = panelsTemp[Z][1].front();
     panelsTemp[Z][1].pop_front();
 
-    this->panels[i][X][LENGTH] = this->panels[i][X][1] - this->panels[i][X][0];
-    this->panels[i][Y][LENGTH] = this->panels[i][Y][1] - this->panels[i][Y][0];
-    this->panels[i][Z][LENGTH] = this->panels[i][Z][1] - this->panels[i][Z][0];
+    panels[i][X][LENGTH] = panels[i][X][1] - panels[i][X][0];
+    panels[i][Y][LENGTH] = panels[i][Y][1] - panels[i][Y][0];
+    panels[i][Z][LENGTH] = panels[i][Z][1] - panels[i][Z][0];
 
-    this->panels[i][X][CENTER]
-        = (this->panels[i][X][1] + this->panels[i][X][0]) / 2;
-    this->panels[i][Y][CENTER]
-        = (this->panels[i][Y][1] + this->panels[i][Y][0]) / 2;
-    this->panels[i][Z][CENTER]
-        = (this->panels[i][Z][1] + this->panels[i][Z][0]) / 2;
+    panels[i][X][CENTER] = (panels[i][X][1] + panels[i][X][0]) / 2;
+    panels[i][Y][CENTER] = (panels[i][Y][1] + panels[i][Y][0]) / 2;
+    panels[i][Z][CENTER] = (panels[i][Z][1] + panels[i][Z][0]) / 2;
 
-    this->dirs[i] = dirsTemp.front();
+    dirs[i] = dirsTemp.front();
     dirsTemp.pop_front();
-    this->areas[i] = areasTemp.front();
+    areas[i] = areasTemp.front();
     areasTemp.pop_front();
 
-    this->indexIncrements[i] = indexIncrementsTemp.front();
+    indexIncrements[i] = indexIncrementsTemp.front();
     indexIncrementsTemp.pop_front();
 
-    this->basisTypes[i] = basisTypesTemp.front();
+    basisTypes[i] = basisTypesTemp.front();
     basisTypesTemp.pop_front();
-    this->basisDirs[i] = basisDirsTemp.front();
+    basisDirs[i] = basisDirsTemp.front();
     basisDirsTemp.pop_front();
-    this->basisZs[i] = basisZsTemp.front();
+    basisZs[i] = basisZsTemp.front();
     basisZsTemp.pop_front();
-    this->basisShifts[i] = basisShiftsTemp.front();
+    basisShifts[i] = basisShiftsTemp.front();
     basisShiftsTemp.pop_front();
   }
 }
 
 Shape Caplet::selectShape(int panel)
 {
-  switch (this->basisTypes[panel]) {
+  switch (basisTypes[panel]) {
     case 'A':
       return &arch;
       break;
@@ -2206,32 +2179,32 @@ Shape Caplet::selectShape(int panel)
 
 int Caplet::getNPanels() const
 {
-  return this->nPanels;
+  return nPanels;
 }
 
 int Caplet::getNCoefs() const
 {
-  return this->nCoefs;
+  return nCoefs;
 }
 
 int Caplet::getSizeP() const
 {
-  return this->nCoefs * this->nCoefs;
+  return nCoefs * nCoefs;
 }
 
 int Caplet::getSizeCoefs() const
 {
-  return this->nCoefs * this->nWires;
+  return nCoefs * nWires;
 }
 
 int Caplet::getSizeCmat() const
 {
-  return this->nWires * this->nWires;
+  return nWires * nWires;
 }
 
 const float* const Caplet::getCmat() const
 {
-  return this->Cmat;
+  return Cmat;
 }
 
 float Caplet::compareCmatError(const float* const cmatRef,
@@ -2239,8 +2212,8 @@ float Caplet::compareCmatError(const float* const cmatRef,
 {
   using std::abs;
 
-  float* const cmatError = new float[this->getSizeCmat()];
-  int n = this->nWires;
+  float* const cmatError = new float[getSizeCmat()];
+  int n = nWires;
   float maxError = 0.0f;
   int maxErrorI = 0;
   int maxErrorJ = 0;
@@ -2256,7 +2229,7 @@ float Caplet::compareCmatError(const float* const cmatRef,
           errRef = (cmatRef[i + n * j]);
       }
       float thisError
-          = abs((this->Cmat[i + n * j] - cmatRef[i + n * j]) / errRef * 100);
+          = abs((Cmat[i + n * j] - cmatRef[i + n * j]) / errRef * 100);
       cmatError[i + n * j] = thisError;
 
       if (maxError < thisError) {
@@ -2288,13 +2261,13 @@ float Caplet::compareCmatError(const Caplet* const caplet,
                                ERROR_REF option) const
 {
   const float* const cmatRef = caplet->getCmat();
-  return this->compareCmatError(cmatRef, option);
+  return compareCmatError(cmatRef, option);
 }
 
 float Caplet::compareCmatError(const std::string filename,
                                ERROR_REF option) const
 {
-  const int n = this->nWires;
+  const int n = nWires;
 
   float* cmatRef = new float[n * n];
 
@@ -2313,7 +2286,7 @@ float Caplet::compareCmatError(const std::string filename,
     }
   }
 
-  float maxError = this->compareCmatError(cmatRef, option);
+  float maxError = compareCmatError(cmatRef, option);
   delete[] cmatRef;
 
   return maxError;
@@ -2334,44 +2307,44 @@ void Caplet::rotateX2Z(float* coord_ptr[3][4], int panelNo)
    * 1. Look at the 2nd pointer of the array.
    * 2. We care about the address where the pointer points
    * */
-  *coord_ptr[X] = this->panels[panelNo][Y];
-  *coord_ptr[Y] = this->panels[panelNo][Z];
-  *coord_ptr[Z] = this->panels[panelNo][X];
+  *coord_ptr[X] = panels[panelNo][Y];
+  *coord_ptr[Y] = panels[panelNo][Z];
+  *coord_ptr[Z] = panels[panelNo][X];
 }
 
 void Caplet::rotateY2Z(float* coord_ptr[3][4], int panelNo)
 {
-  *coord_ptr[X] = this->panels[panelNo][Z];
-  *coord_ptr[Y] = this->panels[panelNo][X];
-  *coord_ptr[Z] = this->panels[panelNo][Y];
+  *coord_ptr[X] = panels[panelNo][Z];
+  *coord_ptr[Y] = panels[panelNo][X];
+  *coord_ptr[Z] = panels[panelNo][Y];
 }
 
 void Caplet::rotateZ2Z(float* coord_ptr[3][4], int panelNo)
 {
-  *coord_ptr[X] = this->panels[panelNo][X];
-  *coord_ptr[Y] = this->panels[panelNo][Y];
-  *coord_ptr[Z] = this->panels[panelNo][Z];
+  *coord_ptr[X] = panels[panelNo][X];
+  *coord_ptr[Y] = panels[panelNo][Y];
+  *coord_ptr[Z] = panels[panelNo][Z];
 }
 
 void Caplet::mirrorY2X(float* coord_ptr[3][4], int panelNo)
 {
-  *coord_ptr[X] = this->panels[panelNo][Y];
-  *coord_ptr[Y] = this->panels[panelNo][X];
-  *coord_ptr[Z] = this->panels[panelNo][Z];
+  *coord_ptr[X] = panels[panelNo][Y];
+  *coord_ptr[Y] = panels[panelNo][X];
+  *coord_ptr[Z] = panels[panelNo][Z];
 }
 
 void Caplet::mirrorY2Z(float* coord_ptr[3][4], int panelNo)
 {
-  *coord_ptr[X] = this->panels[panelNo][X];
-  *coord_ptr[Y] = this->panels[panelNo][Z];
-  *coord_ptr[Z] = this->panels[panelNo][Y];
+  *coord_ptr[X] = panels[panelNo][X];
+  *coord_ptr[Y] = panels[panelNo][Z];
+  *coord_ptr[Z] = panels[panelNo][Y];
 }
 
 void Caplet::mirrorX2Z(float* coord_ptr[3][4], int panelNo)
 {
-  *coord_ptr[X] = this->panels[panelNo][Z];
-  *coord_ptr[Y] = this->panels[panelNo][Y];
-  *coord_ptr[Z] = this->panels[panelNo][X];
+  *coord_ptr[X] = panels[panelNo][Z];
+  *coord_ptr[Y] = panels[panelNo][Y];
+  *coord_ptr[Z] = panels[panelNo][X];
 }
 
 //__________________________________________________________
@@ -2380,14 +2353,14 @@ void Caplet::mirrorX2Z(float* coord_ptr[3][4], int panelNo)
 //*
 void Caplet::printP(std::ostream& out)
 {
-  if (this->isLoaded && this->isSolved) {
-    switch (this->mode) {
+  if (isLoaded && isSolved) {
+    switch (mode) {
       case FAST_GALERKIN:
-        print_matrix(this->P, this->nCoefs, this->nCoefs, "", 'u', out);
+        print_matrix(P, nCoefs, nCoefs, "", 'u', out);
         break;
       case DOUBLE_GALERKIN:
       case DOUBLE_COLLOCATION:
-        print_matrix(this->dP, this->nCoefs, this->nCoefs, "", 'u', out);
+        print_matrix(dP, nCoefs, nCoefs, "", 'u', out);
         cout << "here" << endl;
         cout << dP[0] << ", " << dP[1] << endl;
         out << "test" << endl;
@@ -2399,14 +2372,14 @@ void Caplet::printP(std::ostream& out)
 
 void Caplet::printCoefs()
 {
-  if (this->isLoaded && this->isSolved) {
-    switch (this->mode) {
+  if (isLoaded && isSolved) {
+    switch (mode) {
       case FAST_GALERKIN:
-        print_matrix(this->coefs, this->nCoefs, this->nWires, "");
+        print_matrix(coefs, nCoefs, nWires, "");
         break;
       case DOUBLE_GALERKIN:
       case DOUBLE_COLLOCATION:
-        print_matrix(this->dcoefs, this->nCoefs, this->nWires, "");
+        print_matrix(dcoefs, nCoefs, nWires, "");
         break;
       default:;
     }
@@ -2415,14 +2388,14 @@ void Caplet::printCoefs()
 
 void Caplet::printRHS(std::ostream& out)
 {
-  if (this->isLoaded && this->isSolved) {
-    switch (this->mode) {
+  if (isLoaded && isSolved) {
+    switch (mode) {
       case FAST_GALERKIN:
-        print_matrix(this->rhs, this->nCoefs, this->nWires, "", 'a', out);
+        print_matrix(rhs, nCoefs, nWires, "", 'a', out);
         break;
       case DOUBLE_GALERKIN:
       case DOUBLE_COLLOCATION:
-        print_matrix(this->drhs, this->nCoefs, this->nWires, "", 'a', out);
+        print_matrix(drhs, nCoefs, nWires, "", 'a', out);
         break;
       default:;
     }
@@ -2431,14 +2404,14 @@ void Caplet::printRHS(std::ostream& out)
 
 void Caplet::printCmat()
 {
-  if (this->isLoaded && this->isSolved) {
-    switch (this->mode) {
+  if (isLoaded && isSolved) {
+    switch (mode) {
       case FAST_GALERKIN:
-        print_matrix(this->Cmat, this->nWires, this->nWires, "");
+        print_matrix(Cmat, nWires, nWires, "");
         break;
       case DOUBLE_GALERKIN:
       case DOUBLE_COLLOCATION:
-        print_matrix(this->dCmat, this->nWires, this->nWires, "");
+        print_matrix(dCmat, nWires, nWires, "");
         break;
       default:;
     }
@@ -2467,7 +2440,7 @@ void Caplet::printPanel(int index)
 //*
 bool Caplet::isPanelAspectRatioValid()
 {
-  if (this->isLoaded == false) {
+  if (isLoaded == false) {
     std::cerr << "ERROR: not yet load any structure " << std::endl;
     std::cerr << "       Unable to check structure validity" << std::endl;
 
@@ -2475,7 +2448,7 @@ bool Caplet::isPanelAspectRatioValid()
   }
   const float maxRatio = 51;
 
-  for (int i = 0; i < this->nPanels; i++) {
+  for (int i = 0; i < nPanels; i++) {
     float ratio = panels[i][(dirs[i] + 1) % 3][LENGTH]
                   / panels[i][(dirs[i] + 2) % 3][LENGTH];
 

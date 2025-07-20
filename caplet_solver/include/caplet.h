@@ -154,7 +154,6 @@ class Caplet
 
   Shape selectShape(int panel);
 
- private:
   void rotateX2Z(float* coord_ptr[3][4], int panelNo);
   void rotateY2Z(float* coord_ptr[3][4], int panelNo);
   void rotateZ2Z(float* coord_ptr[3][4], int panelNo);
