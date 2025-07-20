@@ -221,7 +221,7 @@ def parse_layerdef(layerdef):
     status = STATUS.OUTSIDE
     # default input unit: um
     unit   = 1e-6
-    # defulat output unit: nm
+    # default output unit: nm
     factor = unit/1e-9
 
     metal       = dict()
