@@ -2321,6 +2321,61 @@ float Caplet::compareCmatError(const std::string filename,
 
 //__________________________________________________________
 //*
+//* COORDINATE FUNCTIONS
+//*
+void Caplet::rotateX2Z(float* coord_ptr[3][4], int panelNo)
+{
+  /* the argument float* coord_ptr[3][4] means:
+   * 1. It is a 3-element array.
+   * 2. Each element is a pointer.
+   * 3. The pointer points to a 4-element array.
+   *
+   * *coord_ptr[1] means:
+   * 1. Look at the 2nd pointer of the array.
+   * 2. We care about the address where the pointer points
+   * */
+  *coord_ptr[X] = this->panels[panelNo][Y];
+  *coord_ptr[Y] = this->panels[panelNo][Z];
+  *coord_ptr[Z] = this->panels[panelNo][X];
+}
+
+void Caplet::rotateY2Z(float* coord_ptr[3][4], int panelNo)
+{
+  *coord_ptr[X] = this->panels[panelNo][Z];
+  *coord_ptr[Y] = this->panels[panelNo][X];
+  *coord_ptr[Z] = this->panels[panelNo][Y];
+}
+
+void Caplet::rotateZ2Z(float* coord_ptr[3][4], int panelNo)
+{
+  *coord_ptr[X] = this->panels[panelNo][X];
+  *coord_ptr[Y] = this->panels[panelNo][Y];
+  *coord_ptr[Z] = this->panels[panelNo][Z];
+}
+
+void Caplet::mirrorY2X(float* coord_ptr[3][4], int panelNo)
+{
+  *coord_ptr[X] = this->panels[panelNo][Y];
+  *coord_ptr[Y] = this->panels[panelNo][X];
+  *coord_ptr[Z] = this->panels[panelNo][Z];
+}
+
+void Caplet::mirrorY2Z(float* coord_ptr[3][4], int panelNo)
+{
+  *coord_ptr[X] = this->panels[panelNo][X];
+  *coord_ptr[Y] = this->panels[panelNo][Z];
+  *coord_ptr[Z] = this->panels[panelNo][Y];
+}
+
+void Caplet::mirrorX2Z(float* coord_ptr[3][4], int panelNo)
+{
+  *coord_ptr[X] = this->panels[panelNo][Z];
+  *coord_ptr[Y] = this->panels[panelNo][Y];
+  *coord_ptr[Z] = this->panels[panelNo][X];
+}
+
+//__________________________________________________________
+//*
 //* PRINT UTILITIES
 //*
 void Caplet::printP(std::ostream& out)

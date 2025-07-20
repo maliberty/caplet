@@ -154,52 +154,13 @@ class Caplet
 
   Shape selectShape(int panel);
 
- private:  //* coordinate functions
-  inline void rotateX2Z(float* coord_ptr[3][4], int panelNo)
-  {
-    /* the argument float* coord_ptr[3][4] means:
-     * 1. It is a 3-element array.
-     * 2. Each element is a pointer.
-     * 3. The pointer points to a 4-element array.
-     *
-     * *coord_ptr[1] means:
-     * 1. Look at the 2nd pointer of the array.
-     * 2. We care about the address where the pointer points
-     * */
-    *coord_ptr[X] = this->panels[panelNo][Y];
-    *coord_ptr[Y] = this->panels[panelNo][Z];
-    *coord_ptr[Z] = this->panels[panelNo][X];
-  }
-  inline void rotateY2Z(float* coord_ptr[3][4], int panelNo)
-  {
-    *coord_ptr[X] = this->panels[panelNo][Z];
-    *coord_ptr[Y] = this->panels[panelNo][X];
-    *coord_ptr[Z] = this->panels[panelNo][Y];
-  }
-  inline void rotateZ2Z(float* coord_ptr[3][4], int panelNo)
-  {
-    *coord_ptr[X] = this->panels[panelNo][X];
-    *coord_ptr[Y] = this->panels[panelNo][Y];
-    *coord_ptr[Z] = this->panels[panelNo][Z];
-  }
-  inline void mirrorY2X(float* coord_ptr[3][4], int panelNo)
-  {
-    *coord_ptr[X] = this->panels[panelNo][Y];
-    *coord_ptr[Y] = this->panels[panelNo][X];
-    *coord_ptr[Z] = this->panels[panelNo][Z];
-  }
-  inline void mirrorY2Z(float* coord_ptr[3][4], int panelNo)
-  {
-    *coord_ptr[X] = this->panels[panelNo][X];
-    *coord_ptr[Y] = this->panels[panelNo][Z];
-    *coord_ptr[Z] = this->panels[panelNo][Y];
-  }
-  inline void mirrorX2Z(float* coord_ptr[3][4], int panelNo)
-  {
-    *coord_ptr[X] = this->panels[panelNo][Z];
-    *coord_ptr[Y] = this->panels[panelNo][Y];
-    *coord_ptr[Z] = this->panels[panelNo][X];
-  }
+ private:
+  void rotateX2Z(float* coord_ptr[3][4], int panelNo);
+  void rotateY2Z(float* coord_ptr[3][4], int panelNo);
+  void rotateZ2Z(float* coord_ptr[3][4], int panelNo);
+  void mirrorY2X(float* coord_ptr[3][4], int panelNo);
+  void mirrorY2Z(float* coord_ptr[3][4], int panelNo);
+  void mirrorX2Z(float* coord_ptr[3][4], int panelNo);
 
   double calCollocationPEntryDouble(int panel1, int panel2);
   float calGalerkinPEntry(int panel1, int panel2);
