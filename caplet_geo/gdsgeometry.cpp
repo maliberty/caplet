@@ -950,6 +950,7 @@ RectangleGL::RectangleGL(const Rectangle& rect, float unit)
       break;
     case FLAT:
       zn = 1.0;
+      break;
     default:
       cerr << "ERROR: impossible direction" << endl;
   }
