@@ -324,21 +324,21 @@ void Caplet::loadCapletFile(const std::string filename)
   //* Line 3: nTotalShape
   //* Line n: shape description lines, 12 numbers per line
   //* shapeType, indexIncrement, XL, XU, YL, YU, ZL, ZU, dir, shapeDir,
-  //shapeNormalDistance, shapeShift
+  // shapeNormalDistance, shapeShift
   //* shapeType: either F for Flat, A for Arch, and S for Side arch
   //* indexIncrement:
   //*   a basis function can consists of multiple shapes. The value here can be
-  //0 or 1.
+  // 0 or 1.
   //*   1: the beginning of a new basis function
   //*   0: not increment, meaning the current shape is combined with the shape
-  //before with value 1
+  // before with value 1
   //* XL, XU, YL, YU, ZL, ZU: the range limit of each direction
   //* dir: normal direction of the rectangle that supports the shape
   //*   0 for x-dir, 1 for y-dir, 2 for z-dir
   //* shapeDir: shape varying direction
   //*   0 for x-dir, 1 for y-dir, 2 for z-dir
   //* shapeNormalDistrance: signed distance between the support rectangle and
-  //the neighborhoold rectangle
+  // the neighborhoold rectangle
   //*   positive: decaying in the positive direction
   //*   negative: decaying in the negative direction
   //* shapeShift: shift parameter that indicates the shift of starting point of

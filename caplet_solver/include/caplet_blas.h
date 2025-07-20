@@ -178,7 +178,7 @@ void dgesv_(
     const int* ldb,   // i
     int* info         // o	= 0: successful exit
                       //		< 0: if info == -i, the i-th argument had an
-               //illegal value 		> 0: if info == i,  U(i,i) is exactly zero.
+    // illegal value 		> 0: if info == i,  U(i,i) is exactly zero.
 );
 void sgesv_(
     const int* n,     // i
@@ -190,7 +190,7 @@ void sgesv_(
     const int* ldb,   // i
     int* info         // o	= 0: successful exit
                       //		< 0: if info == -i, the i-th argument had an
-               //illegal value 		> 0: if info == i,  U(i,i) is exactly zero.
+    // illegal value 		> 0: if info == i,  U(i,i) is exactly zero.
 );
 // solve A*x = B where A is positive definite and diagonally dominant
 void dposv_(
@@ -203,8 +203,9 @@ void dposv_(
     const int* ldb,    // i
     int* info          // o	= 0: successful exit
                        //		< 0: if info == -i, the i-th argument had an
-               //illegal value 		> 0: if info == i,  the leading minor of order i
-               //is 				not positive definite, the factorization is not done.
+    // illegal value 		> 0: if info == i,  the leading minor of order i
+    // is 				not positive definite, the factorization
+    // is not done.
 );
 void sposv_(
     const char* uplo,  // i	'u' or 'l'
@@ -216,8 +217,9 @@ void sposv_(
     const int* ldb,    // i
     int* info          // o	= 0: successful exit
                        //		< 0: if info == -i, the i-th argument had an
-               //illegal value 		> 0: if info == i,  the leading minor of order i
-               //is 				not positive definite, the factorization is not done.
+    // illegal value 		> 0: if info == i,  the leading minor of order i
+    // is 				not positive definite, the factorization
+    // is not done.
 );
 
 // solve A*x = B where A is symmetric but not necessary positive definite
@@ -234,10 +236,11 @@ void dsysv_(const char* uplo,  // i	'u' or 'l'
             int* lwork,        // i	lwork>=n*NB, the optimal blocksize of dsytrf
             int* info          // o	= 0: successful exit
                                //		< 0: if INFO = -i, the i-th argument had
-                               //an illegal value
+                               // an illegal value
             //		> 0: if INFO = i, D(i,i) is exactly zero.  The
-            //factorization has 			 been completed, but the block	diagonal matrix
-            //D is exactly singu- 			 lar, so the solution could not be computed.
+            // factorization has 			 been completed, but the
+            // block	diagonal matrix D is exactly singu-
+            // lar, so the solution could not be computed.
 );
 
 void ssysv_(const char* uplo,  // i	'u' or 'l'
@@ -253,10 +256,11 @@ void ssysv_(const char* uplo,  // i	'u' or 'l'
             int* lwork,        // i	lwork>=n*NB, the optimal blocksize of dsytrf
             int* info          // o	= 0: successful exit
                                //		< 0: if INFO = -i, the i-th argument had
-                               //an illegal value
+                               // an illegal value
             //		> 0: if INFO = i, D(i,i) is exactly zero.  The
-            //factorization has 			 been completed, but the block	diagonal matrix
-            //D is exactly singu- 			 lar, so the solution could not be computed.
+            // factorization has 			 been completed, but the
+            // block	diagonal matrix D is exactly singu-
+            // lar, so the solution could not be computed.
 );
 }
 
@@ -285,7 +289,7 @@ inline void sgesv(
     const int& ldb,   // i
     int& info         // o	= 0: successful exit
                       //		< 0: if info == -i, the i-th argument had an
-               //illegal value 		> 0: if info == i,  U(i,i) is exactly zero.
+    // illegal value 		> 0: if info == i,  U(i,i) is exactly zero.
 )
 {
   sgesv_(&n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
