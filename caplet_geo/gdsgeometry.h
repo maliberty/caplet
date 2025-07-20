@@ -164,6 +164,7 @@ class Polygon : public PointList
           iterator last,
           const allocator_type& allo = allocator_type());
   Polygon(const Polygon& poly);
+  Polygon& operator=(const Polygon& other) = default;
 
   bool isManhattan() const;
 };
@@ -202,6 +203,8 @@ class Rectangle
   //**
   //* Copy constructor
   Rectangle(const Rectangle& rect);
+
+  Rectangle& operator=(const Rectangle& other) = default;
 
   //**
   //* area

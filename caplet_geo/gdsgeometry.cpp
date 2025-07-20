@@ -1617,11 +1617,11 @@ RectangleGLList::insertProjectedOverlappingRectangleGL(const RectangleGL& rect,
       //* Ver1.0 obsolete
       /*
       if (it->isEmpty()==true){
-          //* if the inserted projection is *eachRect itself, delete it
+          // if the inserted projection is *eachRect itself, delete it
           this->erase(it);
       }
       else{
-          //* keep the iterator
+          // keep the iterator
           itList.push_back(it);
       }
       */
