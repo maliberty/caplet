@@ -629,7 +629,6 @@ void GeoLoader::loadReferenceResult(const string& filename)
     stringstream ss(line);
     for (size_t j = 0; j < size; ++j) {
       ss >> referenceResult.capacitanceMatrix[i][j];
-      referenceResult.capacitanceMatrix[i][j];
     }
   }
   fin.close();
