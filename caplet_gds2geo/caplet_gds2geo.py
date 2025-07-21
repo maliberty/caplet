@@ -279,8 +279,8 @@ def parse_layerdef(layerdef):
                     name = token[METAL.NAME].lower()
                     key  = token[METAL.LAYER]+'_'+token[METAL.DATATYPE]
 
-                    bottom    = int(float(token[METAL.HEIGHT])*factor)
-                    thickness = int(float(token[METAL.THICKNESS])*factor)
+                    bottom    = round(float(token[METAL.HEIGHT])*factor)
+                    thickness = round(float(token[METAL.THICKNESS])*factor)
                     top    = bottom + thickness
 
                     metal.setdefault(name, [bottom, top, len(metal_index)])
