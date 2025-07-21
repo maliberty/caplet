@@ -145,29 +145,29 @@ class GeoLoader
  private:
   //**
   //* layer information
-  int nMetal{0};
-  int** metalDef{nullptr};  //* size: nMetal x 2
+  int nMetal_{0};
+  int** metalDef_{nullptr};  //* size: nMetal x 2
 
-  int nVia{0};
-  int** viaDef{nullptr};      //* size: nVia x 2
-  int** viaConnect{nullptr};  //* size: nVia x 2
+  int nVia_{0};
+  int** viaDef_{nullptr};      //* size: nVia x 2
+  int** viaConnect_{nullptr};  //* size: nVia x 2
 
-  std::string fileName;
-  bool isLoaded{false};
+  std::string fileName_;
+  bool isLoaded_{false};
   //______________________________________________________
   //* Paramters
 
-  ConductorList metalConductorList;
-  LayeredRectangleList viaLayeredRectangleList;
+  ConductorList metalConductorList_;
+  LayeredRectangleList viaLayeredRectangleList_;
 
-  ConductorList geometryConductorList;
+  ConductorList geometryConductorList_;
 
-  ConductorFPList geometryConductorFPList;
-  ConductorFPList pwcConductorFPList;
-  ConductorFPList instantiableConductorFPList;
+  ConductorFPList geometryConductorFPList_;
+  ConductorFPList pwcConductorFPList_;
+  ConductorFPList instantiableConductorFPList_;
 
-  double tPWCConstruction{0};
-  double tInstantiableConstruction{0};
+  double tPWCConstruction_{0};
+  double tInstantiableConstruction_{0};
 
   void readGeo(const std::string& geoFileName,
                LayeredPolygonList& metalLayeredPolygonList,
@@ -181,8 +181,8 @@ class GeoLoader
   ConductorList& generateConductorList(ConductorList& conductorList,
                                        bool flagDecomposed);
 
-  ExtractionInfoList extractionInfoList;
-  ExtractionInfo referenceResult;
+  ExtractionInfoList extractionInfoList_;
+  ExtractionInfo referenceResult_;
 };
 
 typedef std::list<std::pair<int, int>> AdjacencyList;

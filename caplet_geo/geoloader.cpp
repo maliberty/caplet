@@ -41,7 +41,7 @@ using namespace std;
 //**
 //* debugging utitlity functions
 template <class T>
-void printMatrix(T** matrix, int nrow, int ncol)
+void printMatrix(T** matrix, const int nrow, const int ncol)
 {
   using namespace std;
   for (int i = 0; i < nrow; i++) {
@@ -94,21 +94,21 @@ void GeoLoader::loadGeo(const string& geoFile)
     }
   }
   //* poly to rect for metal
-  LayeredRectangleList metalLayeredRectangleList(nMetal);
-  for (int i = 0; i < nMetal; ++i) {
+  LayeredRectangleList metalLayeredRectangleList(nMetal_);
+  for (int i = 0; i < nMetal_; ++i) {
     poly2rect(metalLayeredPolygonList[i], metalLayeredRectangleList[i]);
     metalLayeredPolygonList[i].clear();
   }
   //* poly to rect for via
-  viaLayeredRectangleList.resize(nVia);
-  for (int i = 0; i < nVia; ++i) {
-    poly2rect(viaLayeredPolygonList[i], viaLayeredRectangleList[i]);
+  viaLayeredRectangleList_.resize(nVia_);
+  for (int i = 0; i < nVia_; ++i) {
+    poly2rect(viaLayeredPolygonList[i], viaLayeredRectangleList_[i]);
     viaLayeredPolygonList[i].clear();
   }
 
   //* Group connected 2D x-y plane rects into a list (metal only)
-  LayeredConnectedRectangleList metalLayeredConnectedRectangleList(nMetal);
-  for (int i = 0; i < nMetal; ++i) {
+  LayeredConnectedRectangleList metalLayeredConnectedRectangleList(nMetal_);
+  for (int i = 0; i < nMetal_; ++i) {
     generateConnectedRects(metalLayeredRectangleList[i],
                            metalLayeredConnectedRectangleList[i]);
     metalLayeredRectangleList[i].clear();
@@ -116,7 +116,7 @@ void GeoLoader::loadGeo(const string& geoFile)
 
   //* decompose x-y plane rects in each connected conductor
   //* and then generate 3d rects
-  for (int i = 0; i < nMetal; ++i) {
+  for (int i = 0; i < nMetal_; ++i) {
     //* each metal layer
     for (ConnectedRectangleList::iterator eachListIt
          = metalLayeredConnectedRectangleList[i].begin();
@@ -133,16 +133,16 @@ void GeoLoader::loadGeo(const string& geoFile)
       DirAdjacencyListOfRectangleList compAdjacency;
       computeAdjacency(*eachListIt, adjacency, compAdjacency);
       //* construct 3D rects
-      metalConductorList.push_back(Conductor(nMetal, nVia));
+      metalConductorList_.push_back(Conductor(nMetal_, nVia_));
       generate3dRects(*eachListIt,
                       compAdjacency,
-                      metalDef[i][0],
-                      metalDef[i][1],
+                      metalDef_[i][0],
+                      metalDef_[i][1],
                       i,
-                      metalConductorList.back());
+                      metalConductorList_.back());
       //* merge 3D rects
       for (int dirIndex = 0; dirIndex < Conductor::nDir; ++dirIndex) {
-        metalConductorList.back().layer[i][dirIndex].merge();
+        metalConductorList_.back().layer[i][dirIndex].merge();
       }
 
       eachListIt->clear();
@@ -151,7 +151,7 @@ void GeoLoader::loadGeo(const string& geoFile)
 
   //* UNCOMMENT to generate matlab structure output
   // printConductorListMatlab(conductorList);
-  isLoaded = true;
+  isLoaded_ = true;
 }
 
 //**
@@ -159,10 +159,10 @@ void GeoLoader::loadGeo(const string& geoFile)
 //* -
 const ConductorFPList& GeoLoader::getGeometryConductorList(const float unit)
 {
-  generateConductorList(geometryConductorList, false);
-  geometryConductorFPList.constructFrom(geometryConductorList, unit);
-  geometryConductorList.clear();
-  return geometryConductorFPList;
+  generateConductorList(geometryConductorList_, false);
+  geometryConductorFPList_.constructFrom(geometryConductorList_, unit);
+  geometryConductorList_.clear();
+  return geometryConductorFPList_;
 }
 
 const ConductorFPList& GeoLoader::getPWCBasisFunction(
@@ -170,20 +170,20 @@ const ConductorFPList& GeoLoader::getPWCBasisFunction(
     const float suggestedPanelSize)
 {
   clock_t tBefore = clock();
-  generateConductorList(geometryConductorList, true);
-  pwcConductorFPList.constructFrom(geometryConductorList, unit);
-  geometryConductorList.clear();
-  discretizeDisjointSurface(pwcConductorFPList, suggestedPanelSize);
+  generateConductorList(geometryConductorList_, true);
+  pwcConductorFPList_.constructFrom(geometryConductorList_, unit);
+  geometryConductorList_.clear();
+  discretizeDisjointSurface(pwcConductorFPList_, suggestedPanelSize);
   clock_t tAfter = clock();
 
-  tPWCConstruction = difftime(tAfter, tBefore) / CLOCKS_PER_SEC;
+  tPWCConstruction_ = difftime(tAfter, tBefore) / CLOCKS_PER_SEC;
 
-  return pwcConductorFPList;
+  return pwcConductorFPList_;
 }
 
 const ConductorFPList& GeoLoader::getPWCBasisFunction() const
 {
-  return pwcConductorFPList;
+  return pwcConductorFPList_;
 }
 
 const ConductorFPList& GeoLoader::getInstantiableBasisFunction(
@@ -194,17 +194,17 @@ const ConductorFPList& GeoLoader::getInstantiableBasisFunction(
 {
   clock_t tBefore = clock();
 
-  generateConductorList(geometryConductorList, false);
-  instantiableConductorFPList.constructFrom(geometryConductorList, unit);
-  geometryConductorList.clear();
-  instantiateBasisFunction(instantiableConductorFPList,
+  generateConductorList(geometryConductorList_, false);
+  instantiableConductorFPList_.constructFrom(geometryConductorList_, unit);
+  geometryConductorList_.clear();
+  instantiateBasisFunction(instantiableConductorFPList_,
                            archLength,
                            projectionDistance,
                            projectionMergeDistance);
   clock_t tAfter = clock();
-  tInstantiableConstruction = difftime(tAfter, tBefore) / CLOCKS_PER_SEC;
+  tInstantiableConstruction_ = difftime(tAfter, tBefore) / CLOCKS_PER_SEC;
 
-  return instantiableConductorFPList;
+  return instantiableConductorFPList_;
 }
 
 void GeoLoader::loadQui(const string& inputFileName)
@@ -250,8 +250,8 @@ void GeoLoader::loadQui(const string& inputFileName)
   }
   fin.close();
 
-  //* copy to pwcConductorFPList
-  pwcConductorFPList.clear();
+  //* copy to pwcConductorFPList_
+  pwcConductorFPList_.clear();
   const int nLayer = 1;      // single layer for visualization purpose
   const int layerIndex = 0;  // single layer
   const int dirIndex = 0;    // single dir
@@ -259,16 +259,16 @@ void GeoLoader::loadQui(const string& inputFileName)
   for (map<int, RectangleGLList>::const_iterator each = rectListMap.begin();
        each != rectListMap.end();
        ++each, ++condIndex) {
-    pwcConductorFPList.push_back(ConductorFP(nLayer, 0));
+    pwcConductorFPList_.push_back(ConductorFP(nLayer, 0));
     RectangleGLList& rectList
-        = pwcConductorFPList.back().layer[layerIndex][dirIndex];
+        = pwcConductorFPList_.back().layer[layerIndex][dirIndex];
     rectList.insert(rectList.begin(), each->second.begin(), each->second.end());
   }
 }
 
 //**
 //* GeoLoader::runCapletQui
-//* - write pwcConductorFPList to .qui in path
+//* - write pwcConductorFPList_ to .qui in path
 //* - run caplet
 //* - write output to .stdsolver_output
 ExtractionInfo& GeoLoader::runCapletQui(const std::string& pathFileBaseName)
@@ -279,7 +279,7 @@ ExtractionInfo& GeoLoader::runCapletQui(const std::string& pathFileBaseName)
   const string suffix = "stdsolver_output";
   const string resultSuffix = "stdsolver_result";
   const string outputFileName = pathFileBaseName + "." + suffix;
-  writeFastcapFile(pathFileBaseName, pwcConductorFPList);
+  writeFastcapFile(pathFileBaseName, pwcConductorFPList_);
 
   stringstream ssCommand;
   ssCommand << "/usr/bin/mpirun -np " << coreNum << " " << program << " -o "
@@ -304,8 +304,8 @@ ExtractionInfo& GeoLoader::runCapletQui(const std::string& pathFileBaseName)
   bool flagTSetupFound = false;
   bool flagMatrixFound = false;
 
-  extractionInfoList.push_back(ExtractionInfo());
-  ExtractionInfo& result = extractionInfoList.back();
+  extractionInfoList_.push_back(ExtractionInfo());
+  ExtractionInfo& result = extractionInfoList_.back();
 
   string line;
   string temp;
@@ -362,8 +362,8 @@ ExtractionInfo& GeoLoader::runCapletQui(const std::string& pathFileBaseName)
   fin.close();
 
   result.tSolving = result.tTotal - result.tSetup;
-  result.tTotal += tInstantiableConstruction;
-  result.tBasis = tInstantiableConstruction;
+  result.tTotal += tInstantiableConstruction_;
+  result.tBasis = tInstantiableConstruction_;
 
   const string resultFileName = pathFileBaseName + "." + resultSuffix;
 
@@ -380,7 +380,7 @@ ExtractionInfo& GeoLoader::runCapletQui(const std::string& pathFileBaseName)
 
 //**
 //* GeoLoader::runFastcap
-//* - write pwcConductorFPList to .qui in path
+//* - write pwcConductorFPList_ to .qui in path
 //* - run fastcap with flag
 //* - write output to .fastcap_output
 ExtractionInfo& GeoLoader::runFastcap(const string& pathFileBaseName,
@@ -391,7 +391,7 @@ ExtractionInfo& GeoLoader::runFastcap(const string& pathFileBaseName,
   const string resultSuffix = "fastcap_result";
   const string outputFileName = pathFileBaseName + "." + suffix;
 
-  writeFastcapFile(pathFileBaseName, pwcConductorFPList);
+  writeFastcapFile(pathFileBaseName, pwcConductorFPList_);
   const string command = program + " " + option + " " + pathFileBaseName
                          + ".qui | tee " + outputFileName;
   int systemReturn = system(command.c_str());
@@ -411,8 +411,8 @@ ExtractionInfo& GeoLoader::runFastcap(const string& pathFileBaseName,
   bool flagTSetupFound = false;
   bool flagMatrixFound = false;
 
-  extractionInfoList.push_back(ExtractionInfo());
-  ExtractionInfo& result = extractionInfoList.back();
+  extractionInfoList_.push_back(ExtractionInfo());
+  ExtractionInfo& result = extractionInfoList_.back();
   float unit = 1.0f;
 
   string line;
@@ -477,8 +477,8 @@ ExtractionInfo& GeoLoader::runFastcap(const string& pathFileBaseName,
   fin.close();
 
   result.tSolving = result.tTotal - result.tSetup;
-  result.tTotal += tPWCConstruction;
-  result.tBasis = tPWCConstruction;
+  result.tTotal += tPWCConstruction_;
+  result.tBasis = tPWCConstruction_;
 
   const string resultFileName = pathFileBaseName + "." + resultSuffix;
 
@@ -501,7 +501,7 @@ ExtractionInfo& GeoLoader::runCaplet(const string& pathFileBaseName,
   const string resultSuffix = "caplet_result";
   const string outputFileName = pathFileBaseName + "." + suffix;
 
-  writeCapletFile(pathFileBaseName, instantiableConductorFPList);
+  writeCapletFile(pathFileBaseName, instantiableConductorFPList_);
   stringstream ssCommand;
   ssCommand << "/usr/bin/mpirun -np " << coreNum << " " << program << " -o "
             << pathFileBaseName << ".cmat " << pathFileBaseName
@@ -525,8 +525,8 @@ ExtractionInfo& GeoLoader::runCaplet(const string& pathFileBaseName,
   bool flagTSetupFound = false;
   bool flagMatrixFound = false;
 
-  extractionInfoList.push_back(ExtractionInfo());
-  ExtractionInfo& result = extractionInfoList.back();
+  extractionInfoList_.push_back(ExtractionInfo());
+  ExtractionInfo& result = extractionInfoList_.back();
 
   string line;
   string temp;
@@ -583,8 +583,8 @@ ExtractionInfo& GeoLoader::runCaplet(const string& pathFileBaseName,
   fin.close();
 
   result.tSolving = result.tTotal - result.tSetup;
-  result.tTotal += tInstantiableConstruction;
-  result.tBasis = tInstantiableConstruction;
+  result.tTotal += tInstantiableConstruction_;
+  result.tBasis = tInstantiableConstruction_;
 
   const string resultFileName = pathFileBaseName + "." + resultSuffix;
 
@@ -601,28 +601,28 @@ ExtractionInfo& GeoLoader::runCaplet(const string& pathFileBaseName,
 
 const ExtractionInfo& GeoLoader::getLastResult() const
 {
-  return extractionInfoList.back();
+  return extractionInfoList_.back();
 }
 
 const ExtractionInfo& GeoLoader::getReferenceResult() const
 {
-  return referenceResult;
+  return referenceResult_;
 }
 
 void GeoLoader::loadReferenceResult(const string& filename)
 {
-  size_t size = geometryConductorFPList.size();
+  size_t size = geometryConductorFPList_.size();
 
   ifstream fin(filename.c_str());
 
   //* read matrix
-  referenceResult.capacitanceMatrix.resize(size, vector<float>(size));
+  referenceResult_.capacitanceMatrix.resize(size, vector<float>(size));
   string line;
   for (size_t i = 0; i < size; ++i) {
     getline(fin, line);
     stringstream ss(line);
     for (size_t j = 0; j < size; ++j) {
-      ss >> referenceResult.capacitanceMatrix[i][j];
+      ss >> referenceResult_.capacitanceMatrix[i][j];
     }
   }
   fin.close();
@@ -631,20 +631,20 @@ void GeoLoader::loadReferenceResult(const string& filename)
 const ExtractionInfo& GeoLoader::storeLastAsReference(
     const string& pathFileNameCmat = "")
 {
-  referenceResult = extractionInfoList.back();
+  referenceResult_ = extractionInfoList_.back();
   if (pathFileNameCmat.empty() == false) {
     ofstream fout(pathFileNameCmat.c_str());
-    referenceResult.printMatrix(fout);
+    referenceResult_.printMatrix(fout);
     fout.close();
   }
-  return referenceResult;
+  return referenceResult_;
 }
 
 list<ExtractionInfo> GeoLoader::compareAllAgainstReference() const
 {
   list<ExtractionInfo> result;
-  for (list<ExtractionInfo>::const_iterator each = extractionInfoList.begin();
-       each != extractionInfoList.end();
+  for (list<ExtractionInfo>::const_iterator each = extractionInfoList_.begin();
+       each != extractionInfoList_.end();
        ++each) {
     result.push_back(ExtractionInfo());
     ExtractionInfo& current = result.back();
@@ -654,14 +654,14 @@ list<ExtractionInfo> GeoLoader::compareAllAgainstReference() const
     current.tBasis = each->tBasis;
     current.tSetup = each->tSetup;
     current.tSolving = each->tSolving;
-    current.error = each->compare(referenceResult);
+    current.error = each->compare(referenceResult_);
   }
   return result;
 }
 
 void GeoLoader::clearResult()
 {
-  extractionInfoList.clear();
+  extractionInfoList_.clear();
 }
 
 //__________________________________________________________
@@ -670,12 +670,12 @@ void GeoLoader::clearResult()
 //*
 size_t GeoLoader::getNumberOfConductor() const
 {
-  return geometryConductorFPList.size();
+  return geometryConductorFPList_.size();
 }
 
 //**
 //* GeoLoader::generateConductorList
-//* - Init: Copy metalConductorList to conductorList
+//* - Init: Copy metalConductorList_ to conductorList
 ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
                                                 bool flagDecomposed)
 {
@@ -686,23 +686,23 @@ ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
 
   conductorList.clear();
 
-  if (isLoaded == false) {
+  if (isLoaded_ == false) {
     return conductorList;
   }
 
-  //* Copy metalConductorList to conductorList
+  //* Copy metalConductorList_ to conductorList
   conductorList.insert(conductorList.begin(),
-                       metalConductorList.begin(),
-                       metalConductorList.end());
+                       metalConductorList_.begin(),
+                       metalConductorList_.end());
 
   //* Construct 3D vias and put together connected conductors
-  for (int viaIndex = 0; viaIndex < nVia; ++viaIndex) {
-    int lowerMetalIndex = viaConnect[viaIndex][0];
-    int upperMetalIndex = viaConnect[viaIndex][1];
+  for (int viaIndex = 0; viaIndex < nVia_; ++viaIndex) {
+    int lowerMetalIndex = viaConnect_[viaIndex][0];
+    int upperMetalIndex = viaConnect_[viaIndex][1];
 
     for (RectangleList::const_iterator eachViaIt
-         = viaLayeredRectangleList[viaIndex].begin();
-         eachViaIt != viaLayeredRectangleList[viaIndex].end();
+         = viaLayeredRectangleList_[viaIndex].begin();
+         eachViaIt != viaLayeredRectangleList_[viaIndex].end();
          ++eachViaIt) {
       list<Conductor>::iterator eachBottomCondIt;
       list<Conductor>::iterator eachTopCondIt;
@@ -745,25 +745,25 @@ ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
         eachBottomCondIt->generateVia(
             *eachViaIt,
             viaIndex,
-            viaDef,
-            viaConnect,
-            flagDecomposed);  //[viaIndex][0], viaDef[viaIndex][1]);
+            viaDef_,
+            viaConnect_,
+            flagDecomposed);  //[viaIndex][0], viaDef_[viaIndex][1]);
       } else {
         if (flagBottom == true) {
           eachBottomCondIt->generateVia(
               *eachViaIt,
               viaIndex,
-              viaDef,
-              viaConnect,
-              flagDecomposed);  //[viaIndex][0], viaDef[viaIndex][1]);
+              viaDef_,
+              viaConnect_,
+              flagDecomposed);  //[viaIndex][0], viaDef_[viaIndex][1]);
         }
         if (flagTop == true) {
           eachTopCondIt->generateVia(
               *eachViaIt,
               viaIndex,
-              viaDef,
-              viaConnect,
-              flagDecomposed);  //[viaIndex][0], viaDef[viaIndex][1]);
+              viaDef_,
+              viaConnect_,
+              flagDecomposed);  //[viaIndex][0], viaDef_[viaIndex][1]);
         }
       }
     }
@@ -776,7 +776,7 @@ ConductorList& GeoLoader::generateConductorList(ConductorList& conductorList,
        eachCond != conductorList.end();
        ++eachCond) {
     if (flagDecomposed == true
-        && eachCond->checkSelfOverlapping(viaConnect) == true) {
+        && eachCond->checkSelfOverlapping(viaConnect_) == true) {
       cerr << "ERROR: overlapping rectangles" << endl;
     }
     if (eachCond->checkZeroAreaRectangle() == true) {
@@ -796,21 +796,20 @@ void GeoLoader::readGeo(const std::string& geoFileName,
                         LayeredPolygonList& viaLayeredPolygonList)
 {
   ifstream fin(geoFileName.c_str());
-  if (!fin.is_open()) {
-    fin.close();
+  if (!fin) {
     throw FileNotFoundError(geoFileName);
   }
 
   clear();
-  this->fileName = geoFileName;
+  fileName_ = geoFileName;
 
   //* read layer info
   readLayerInfo(fin);
 
   //* read metal struc
-  readStruc(fin, nMetal, metalLayeredPolygonList);
+  readStruc(fin, nMetal_, metalLayeredPolygonList);
   //* read via struc
-  readStruc(fin, nVia, viaLayeredPolygonList);
+  readStruc(fin, nVia_, viaLayeredPolygonList);
 
   //* close file
   fin.close();
@@ -833,37 +832,37 @@ void GeoLoader::readLayerInfo(ifstream& fin)
   //* get metal layer infomation
   getline(fin, line);
   sscanf(line.c_str(), "%d", &nLine);
-  nMetal = nLine;
-  //* allocate metalDef
-  metalDef = new int*[nMetal];
-  for (int i = 0; i < nMetal; i++) {
-    metalDef[i] = new int[2];
+  nMetal_ = nLine;
+  //* allocate metalDef_
+  metalDef_ = new int*[nMetal_];
+  for (int i = 0; i < nMetal_; i++) {
+    metalDef_[i] = new int[2];
   }
 
-  for (int i = 0; i < nMetal; i++) {
+  for (int i = 0; i < nMetal_; i++) {
     getline(fin, line);
     sscanf(line.c_str(),
            "%d, %d, %d",
            &layerIndex,
            &bottomElevation,
            &topElevation);
-    metalDef[layerIndex][0] = bottomElevation;
-    metalDef[layerIndex][1] = topElevation;
+    metalDef_[layerIndex][0] = bottomElevation;
+    metalDef_[layerIndex][1] = topElevation;
   }
 
   //* get via infomation
   getline(fin, line);
   sscanf(line.c_str(), "%d", &nLine);
-  nVia = nLine;
-  //* allocate viaDef, viaConnect
-  viaDef = new int*[nVia];
-  viaConnect = new int*[nVia];
-  for (int i = 0; i < nVia; i++) {
-    viaDef[i] = new int[2];
-    viaConnect[i] = new int[2];
+  nVia_ = nLine;
+  //* allocate viaDef_, viaConnect_
+  viaDef_ = new int*[nVia_];
+  viaConnect_ = new int*[nVia_];
+  for (int i = 0; i < nVia_; i++) {
+    viaDef_[i] = new int[2];
+    viaConnect_[i] = new int[2];
   }
 
-  for (int i = 0; i < nVia; i++) {
+  for (int i = 0; i < nVia_; i++) {
     getline(fin, line);
     sscanf(line.c_str(),
            "%d, %d, %d, %d, %d",
@@ -872,10 +871,10 @@ void GeoLoader::readLayerInfo(ifstream& fin)
            &topElevation,
            &bottomConnect,
            &topConnect);
-    viaDef[i][0] = bottomElevation;
-    viaDef[i][1] = topElevation;
-    viaConnect[i][0] = bottomConnect;
-    viaConnect[i][1] = topConnect;
+    viaDef_[i][0] = bottomElevation;
+    viaDef_[i][1] = topElevation;
+    viaConnect_[i][0] = bottomConnect;
+    viaConnect_[i][1] = topConnect;
   }
 }
 
@@ -929,7 +928,7 @@ void GeoLoader::readStruc(ifstream& fin, int nLayer, vector<PolygonList>& struc)
 // void GeoLoader::layeredConductorList2ConductorList()
 //{
 //     conductorList.clear();
-//     for ( int i=0; i<nMetal+nVia; ++i )
+//     for ( int i=0; i<nMetal_+nVia_; ++i )
 //     {
 //         conductorList.insert(conductorList.end(),
 //         layeredMetalConductorList[i].begin(),
@@ -966,33 +965,33 @@ void GeoLoader::printStruc(int nLayer, vector<PolygonList>& struc)
 
 void GeoLoader::clear()
 {
-  if (isLoaded) {
-    //* delete metalDef
-    for (int i = 0; i < nMetal; i++) {
-      delete[] metalDef[i];
+  if (isLoaded_) {
+    //* delete metalDef_
+    for (int i = 0; i < nMetal_; i++) {
+      delete[] metalDef_[i];
     }
-    delete[] metalDef;
+    delete[] metalDef_;
 
-    //* delete viaDef, viaConnect
-    for (int i = 0; i < nVia; i++) {
-      delete[] viaDef[i];
-      delete[] viaConnect[i];
+    //* delete viaDef_, viaConnect_
+    for (int i = 0; i < nVia_; i++) {
+      delete[] viaDef_[i];
+      delete[] viaConnect_[i];
     }
-    delete[] viaDef;
-    delete[] viaConnect;
+    delete[] viaDef_;
+    delete[] viaConnect_;
 
     //* clean up geo info
-    viaLayeredRectangleList.clear();
-    metalConductorList.clear();
+    viaLayeredRectangleList_.clear();
+    metalConductorList_.clear();
 
-    geometryConductorList.clear();
-    geometryConductorFPList.clear();
+    geometryConductorList_.clear();
+    geometryConductorFPList_.clear();
 
-    pwcConductorFPList.clear();
+    pwcConductorFPList_.clear();
 
     //* clean up extraction info
-    extractionInfoList.clear();
-    referenceResult = ExtractionInfo();
+    extractionInfoList_.clear();
+    referenceResult_ = ExtractionInfo();
   }
 }
 
