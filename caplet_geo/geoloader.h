@@ -127,8 +127,6 @@ class GeoLoader
                             const unsigned coreNum = 1);
   ExtractionInfo& runCapletQui(const std::string& pathFileBaseName);
 
-  std::string fileName;
-
   //______________________________________________________
   //*
   //* Reference result
@@ -155,6 +153,7 @@ class GeoLoader
   int** viaDef;      //* size: nVia x 2
   int** viaConnect;  //* size: nVia x 2
 
+  std::string fileName;
   bool isLoaded;
   //______________________________________________________
   //* Paramters
