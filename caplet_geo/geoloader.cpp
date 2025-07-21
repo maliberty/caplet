@@ -74,13 +74,9 @@ void GeoLoader::loadGeo(const string& geoFile)
   //* read geomery definitions from geoFile
   LayeredPolygonList metalLayeredPolygonList;
   LayeredPolygonList viaLayeredPolygonList;
-  try {
-    readGeo(geoFile,
-            metalLayeredPolygonList,
-            viaLayeredPolygonList);  // may throw FileNotFoundError
-  } catch (FileNotFoundError& e) {
-    throw;
-  }
+  readGeo(geoFile,
+          metalLayeredPolygonList,
+          viaLayeredPolygonList);  // may throw FileNotFoundError
 
   //* check if Manhattan geometries
   for (unsigned int i = 0; i < metalLayeredPolygonList.size(); ++i) {
