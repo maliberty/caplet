@@ -92,7 +92,6 @@ class FileNotFoundError : public std::runtime_error
 class GeoLoader
 {
  public:
-  GeoLoader();
   ~GeoLoader();
   void clear();
 
@@ -146,15 +145,15 @@ class GeoLoader
  private:
   //**
   //* layer information
-  int nMetal;
-  int** metalDef;  //* size: nMetal x 2
+  int nMetal{0};
+  int** metalDef{nullptr};  //* size: nMetal x 2
 
-  int nVia;
-  int** viaDef;      //* size: nVia x 2
-  int** viaConnect;  //* size: nVia x 2
+  int nVia{0};
+  int** viaDef{nullptr};      //* size: nVia x 2
+  int** viaConnect{nullptr};  //* size: nVia x 2
 
   std::string fileName;
-  bool isLoaded;
+  bool isLoaded{false};
   //______________________________________________________
   //* Paramters
 
@@ -167,8 +166,8 @@ class GeoLoader
   ConductorFPList pwcConductorFPList;
   ConductorFPList instantiableConductorFPList;
 
-  double tPWCConstruction;
-  double tInstantiableConstruction;
+  double tPWCConstruction{0};
+  double tInstantiableConstruction{0};
 
   void readGeo(const std::string& geoFileName,
                LayeredPolygonList& metalLayeredPolygonList,
@@ -185,6 +184,7 @@ class GeoLoader
   ExtractionInfoList extractionInfoList;
   ExtractionInfo referenceResult;
 };
+
 typedef std::list<std::pair<int, int>> AdjacencyList;
 typedef std::vector<AdjacencyList> DirAdjacencyList;
 typedef std::list<DirAdjacencyList> DirAdjacencyListOfRectangleList;

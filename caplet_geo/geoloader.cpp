@@ -60,12 +60,6 @@ void printMatrix(T** matrix, int nrow, int ncol)
 //*
 
 //**
-//* GeoLoader constructor
-GeoLoader::GeoLoader() : isLoaded(false)
-{
-}
-
-//**
 //* GeoLoader destructor
 GeoLoader::~GeoLoader()
 {
