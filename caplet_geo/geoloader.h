@@ -129,15 +129,6 @@ class GeoLoader
 
   std::string fileName;
 
-  //**
-  //* layer information
-  int nMetal;
-  int** metalDef;  //* size: nMetal x 2
-
-  int nVia;
-  int** viaDef;      //* size: nVia x 2
-  int** viaConnect;  //* size: nVia x 2
-
   //______________________________________________________
   //*
   //* Reference result
@@ -155,6 +146,15 @@ class GeoLoader
   size_t getNumberOfConductor() const;
 
  private:
+  //**
+  //* layer information
+  int nMetal;
+  int** metalDef;  //* size: nMetal x 2
+
+  int nVia;
+  int** viaDef;      //* size: nVia x 2
+  int** viaConnect;  //* size: nVia x 2
+
   bool isLoaded;
   //______________________________________________________
   //* Paramters
